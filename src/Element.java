@@ -21,13 +21,13 @@ public class Element {
 
     public void bouge(int largeur, int hauteur) {
         int nx = x + dx, ny = y + dy;
-        if (nx >= 0 && nx < largeur)
+        if (nx > 0 && nx < largeur-1)
             x = nx;
         else {
             dx *= -1;
             x += dx;
         }
-        if (ny >= 0 && ny < hauteur) {
+        if (ny > 0 && ny < hauteur-1) {
             y = ny;
         }
         else {

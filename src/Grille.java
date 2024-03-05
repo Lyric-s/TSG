@@ -25,7 +25,10 @@ public class Grille {
         for (int l = 0; l < hauteur; ++l) {
             for (int c = 0; c < largeur; ++c) {
                 Element e = occupant(l, c);
-                s += e == null ? " - " : " " + e.getId() + " ";
+                if (l == 0 || c == 0 || l == hauteur-1 || c == largeur-1)
+                    s += e == null ? " * " : " " + e.getId() + " ";
+                else
+                    s += e == null ? " - " : " " + e.getId() + " ";
             }
             s += "\n";
         }
