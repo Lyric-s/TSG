@@ -1,11 +1,13 @@
 package ThreeSpotGame;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class Element {
     private final char id;
     private int xa, ya, xb, yb;
 
     public Element(char id, int xa, int ya, int xb, int yb) {
-        assert(xa != xb && ya != yb);
+        assertTrue(xa-ya != xb-yb);
         this.id = id;
         this.xa = xa;
         this.ya = ya;

@@ -2,6 +2,7 @@ package ThreeSpotGame;
 
 public class Joueur {
     private int nbPointJoueur;
+    private char idPiece;
     private final int idJoueur;
     private static int nbJoueurs;
 
@@ -20,6 +21,14 @@ public class Joueur {
 
     public int getNbJoueurs() {
         return nbJoueurs;
+    }
+
+    public void setIdPiece(char idPiece) {
+        this.idPiece = idPiece;
+    }
+
+    public char getIdPiece() {
+        return idPiece;
     }
 
     public void incNbPointsJoueur() {

@@ -2,14 +2,19 @@ package ThreeSpotGame;
 
 
 import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Scanner;
 
 import static java.lang.String.valueOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Plateau {
     private final int largeur, hauteur;
     private final LinkedList<Element> elements;
     private final LinkedList<Spot> spots;
     private Joueur J1, J2;
+    private int nbTour;
 
     private static class Spot {
         private static int nbSpots = 0;
@@ -42,6 +47,7 @@ public class Plateau {
         this.spots = new LinkedList<>();
         this.J1 = new Joueur();
         this.J2 = new Joueur();
+        this.nbTour = 0;
     }
 
     private void ajouter (Element e) {
@@ -59,19 +65,48 @@ public class Plateau {
         return null;
     }
 
-    public void initPlateau() {
+    private void initPiecesPlateau() {
         ajouter(new Element('R',0,1,0,2));
-        assert(elements.getFirst().getId()=='R');
         ajouter(new Element('W',1,1,1,2));
-        assert(elements.get(1).getId()=='W');
-        ajouter(new Element('B',2,1,2,1));
-        assert(elements.get(2).getId()=='B');
+        ajouter(new Element('B',2,1,2,2));
+        assertEquals('R', elements.getFirst().getId());
+        assertEquals('W', elements.get(1).getId());
+        assertEquals('B', elements.get(2).getId());
         ajouter(new Spot(0,2));
-        assert(spots.getFirst().getIdSpot()==1);
         ajouter(new Spot(1,2));
-        assert(spots.get(1).getIdSpot()==2);
         ajouter(new Spot(2,2));
-        assert(spots.get(2).getIdSpot()==3);
+        assertEquals(1, spots.getFirst().getIdSpot());
+        assertEquals(2, spots.get(1).getIdSpot());
+        assertEquals(3, spots.get(2).getIdSpot());
+    }
+
+    private void initJoueur3SG() {
+        String couleurPiece;
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Joueur " + J1.getIdJoueur() + " choisit la piece 'Rouge' ou 'Bleue': ");
+        while(true) {
+            couleurPiece = sc.next();
+            if ("Rouge".equals(couleurPiece)) {
+                J1.setIdPiece('R');
+                assertEquals('R', J1.getIdPiece());
+                System.out.print("Piece rouge attribuée au Joueur " + J1.getIdJoueur() + " : 'R'");
+                J2.setIdPiece('B');
+                assertEquals('B', J2.getIdPiece());
+                System.out.print("\nPiece bleue attribuée au Joueur " + J2.getIdJoueur() + " : 'B'\n\n");
+                break;
+            }
+            else if ("Bleue".equals(couleurPiece)) {
+                J1.setIdPiece('B');
+                assertEquals('B', J1.getIdPiece());
+                System.out.print("Piece bleue attribuée au Joueur " + J1.getIdJoueur() + " : 'B'");
+                J2.setIdPiece('R');
+                assertEquals('R', J2.getIdPiece());
+                System.out.print("\nPiece rouge attribuée au Joueur " + J2.getIdJoueur() + " : 'R'\n\n");
+                break;
+            }
+            else
+                System.out.print("\nERREUR : Lettre non référencée.\nRéessayez : ");
+        }
     }
 
     private boolean rougeEstSurSpot(Spot s) {
@@ -104,8 +139,10 @@ public class Plateau {
         return pts;
     }
 
-    public void prochainTour() {
-        //to do...
+    public void start3SG() {
+        elements.clear();
+        initPiecesPlateau();
+        initJoueur3SG();
     }
 
     public String toString() {
