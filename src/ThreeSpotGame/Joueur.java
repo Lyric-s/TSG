@@ -1,3 +1,5 @@
+package ThreeSpotGame;
+
 public class Joueur {
     private int nbPointJoueur;
     private final int idJoueur;
