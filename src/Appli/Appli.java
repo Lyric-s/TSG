@@ -5,7 +5,8 @@ import ThreeSpotGame.Plateau;
 public class Appli {
     public static void main(String[] args) {
         Plateau p = new Plateau();
-        p.start3SG();
+        p.initThreeSpotGame();
         System.out.println(p.toString());
+        p.nouvTour();
     }
 }

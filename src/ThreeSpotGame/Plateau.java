@@ -2,7 +2,6 @@ package ThreeSpotGame;
 
 
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Scanner;
 
 import static java.lang.String.valueOf;
@@ -80,10 +79,10 @@ public class Plateau {
         assertEquals(3, spots.get(2).getIdSpot());
     }
 
-    private void initJoueur3SG() {
+    private void initJoueursThreeSpotGame() {
         String couleurPiece;
         Scanner sc = new Scanner(System.in);
-        System.out.print("Joueur " + J1.getIdJoueur() + " choisit la piece 'Rouge' ou 'Bleue': ");
+        System.out.print("Joueur " + J1.getIdJoueur() + " choisit la pièce 'Rouge' ou 'Bleue': ");
         while(true) {
             couleurPiece = sc.next();
             if ("Rouge".equals(couleurPiece)) {
@@ -105,7 +104,7 @@ public class Plateau {
                 break;
             }
             else
-                System.out.print("\nERREUR : Lettre non référencée.\nRéessayez : ");
+                System.out.print("\nERREUR : Couleur non référencée,\nRéessayez : ");
         }
     }
 
@@ -121,28 +120,37 @@ public class Plateau {
         return elements.get(2).occupe(s.getX(),s.getY());
     }
 
-    public int pointsPourRouge() {
-        int pts = 0;
+    private void pointsPourRouge(Joueur j) {
+        assertEquals(j.getIdPiece(), 'R');
         for(Spot s: spots) {
             if (rougeEstSurSpot(s))
-                ++pts;
+                j.incNbPointsJoueur();
         }
-        return pts;
     }
 
-    public int pointsPourBleu() {
-        int pts = 0;
+    private void pointsPourBleu(Joueur j) {
+        assertEquals(j.getIdPiece(), 'B');
         for(Spot s: spots) {
             if (bleuEstSurSpot(s))
-                ++pts;
+                j.incNbPointsJoueur();
         }
-        return pts;
     }
 
-    public void start3SG() {
+    public void initThreeSpotGame() {
         elements.clear();
         initPiecesPlateau();
-        initJoueur3SG();
+        initJoueursThreeSpotGame();
+    }
+
+    public void nouvTour() {
+        if (J1.getIdPiece() == 'R') {
+            pointsPourRouge(J1);
+        }
+        System.out.print("" + J1.getNbPointJoueur());
+    }
+
+    private void finDePartie() {
+        //TODO
     }
 
     public String toString() {
