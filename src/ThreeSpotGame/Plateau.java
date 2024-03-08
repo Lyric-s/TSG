@@ -104,7 +104,7 @@ public class Plateau {
                 break;
             }
             else
-                System.out.print("\nERREUR : Couleur non référencée,\nRéessayez : ");
+                System.out.print("\nERREUR : Couleur non référencée\nRéessayez : ");
         }
     }
 
