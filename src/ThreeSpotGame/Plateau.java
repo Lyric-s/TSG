@@ -78,11 +78,11 @@ public class Plateau {
         }
 
         public boolean estVerticale() {
-            return this.ya == this.yb;
+            return this.xa == this.xb;
         }
 
         public boolean estHorizontale() {
-            return this.xa == this.xb;
+            return this.ya == this.yb;
         }
 
         public boolean occupeA(int xa, int ya) {
