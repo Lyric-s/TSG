@@ -78,11 +78,11 @@ public class Plateau {
         }
 
         public boolean estVerticale() {
-            return this.xa == this.xb;
+            return ya==yb && xb-xa == 1;
         }
 
         public boolean estHorizontale() {
-            return this.ya == this.yb;
+            return xa==xb && yb-ya == 1;
         }
 
         public boolean occupeA(int xa, int ya) {
@@ -244,7 +244,7 @@ public class Plateau {
             for (int ya = 0; ya < largeur; ++ya) {
                 for (int xb = 0; xb < hauteur; ++xb) {
                     for (int yb = 0; yb < largeur; ++yb) {
-                        if ((((xb-xa)+(yb-ya))==1 || ((xb-xa)+(ya-yb))==1 || ((ya-yb)+(xa-xb))==1 || ((yb-ya)+(xa-xb))==1) && estNonOccupee(xa, ya) && estNonOccupee(xb, yb)) {
+                        if (((ya==yb && xb-xa == 1 || xa==xb && yb-ya == 1) && estNonOccupee(xa, ya, xb, yb))) {
                             if (destinations.isEmpty())
                                 destinations.add(new Destination(xa, ya, xb, yb));
                             else if (estPosNonOccupee(xa, ya, xb, yb) && estPosNonOccupee(xb, yb, xa, ya)) {
@@ -344,6 +344,8 @@ public class Plateau {
             }
         }
         System.out.println(toString());
+        System.out.println("\nEspion : xb de rouge = " + elements.getFirst().getXb() + "\n");
+        System.out.println("Espion : yb de rouge = " + elements.getFirst().getYb() + "\n");
         System.out.print("\nCompteur points Joueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur());
         System.out.print("\nCompteur points Joueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + "\n");
         System.out.println("\nNombre de destinations disponibles : " + destinations.size());
