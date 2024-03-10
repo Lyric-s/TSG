@@ -48,11 +48,13 @@ public class Plateau {
         private char idDestination;
 
         public Destination(int xa, int ya, int xb, int yb) {
+            ++nbDestinations;
+            String s = String.valueOf(nbDestinations);
             this.xa = xa;
             this.ya = ya;
             this.xb = xb;
             this.yb = yb;
-            this.idDestination += ++nbDestinations;
+            this.idDestination = s.charAt(0);
         }
 
         public int getXa() {
@@ -75,11 +77,11 @@ public class Plateau {
             return idDestination;
         }
 
-        public boolean estVertical() {
+        public boolean estVerticale() {
             return this.ya == this.yb;
         }
 
-        public boolean estHorizontal() {
+        public boolean estHorizontale() {
             return this.xa == this.xb;
         }
 
@@ -118,9 +120,9 @@ public class Plateau {
 
     private Destination occupante(int l, int c) {
         for (Destination d: destinations) {
-            if (d.estVertical() && d.occupeB(l, c))
+            if (d.estVerticale() && d.occupeB(l, c))
                 return d;
-            else if (d.estHorizontal() && d.occupeA(l, c))
+            else if (d.estHorizontale() && d.occupeA(l, c))
                 return d;
         }
         return null;
@@ -147,6 +149,7 @@ public class Plateau {
         assertEquals(1, spots.getFirst().getIdSpot());
         assertEquals(2, spots.get(1).getIdSpot());
         assertEquals(3, spots.get(2).getIdSpot());
+        System.out.println(toString() + "\n");
     }
 
     private void initJoueursThreeSpotGame() {
@@ -218,6 +221,22 @@ public class Plateau {
         return true;
     }
 
+    private boolean estNonOccupee(int x, int y) {
+        for (Element e: elements) {
+            if (e.occupe(x, y))
+                return false;
+        }
+        return true;
+    }
+
+    private boolean estPosNonOccupee(int xa, int ya, int xb, int yb) {
+        for (Destination d: destinations) {
+            if (d.estVerticale() && d.occupeA(xa, ya) || d.estHorizontale() && d.occupeB(xb, yb))
+                return false;
+        }
+        return true;
+    }
+
     private void recherchePosLibre() {
         casesLibres.clear();
         int n=0;
@@ -225,8 +244,12 @@ public class Plateau {
             for (int ya = 0; ya < largeur; ++ya) {
                 for (int xb = 0; xb < hauteur; ++xb) {
                     for (int yb = 0; yb < largeur; ++yb) {
-                        if ((xa == xb || ya == yb) && estNonOccupee(xa, ya, xb, yb)) {
-                            destinations.add(new Destination(xa, ya, xb, yb));
+                        if ((((xb-xa)+(yb-ya))==1 || ((xb-xa)+(ya-yb))==1 || ((ya-yb)+(xa-xb))==1 || ((yb-ya)+(xa-xb))==1) && estNonOccupee(xa, ya) && estNonOccupee(xb, yb)) {
+                            if (destinations.isEmpty())
+                                destinations.add(new Destination(xa, ya, xb, yb));
+                            else if (estPosNonOccupee(xa, ya, xb, yb) && estPosNonOccupee(xb, yb, xa, ya)) {
+                                destinations.add(new Destination(xa, ya, xb, yb));
+                            }
                         }
                     }
                 }
@@ -240,20 +263,48 @@ public class Plateau {
         initJoueursThreeSpotGame();
     }
 
+    private boolean positionExiste(int p) {
+        return p <= destinations.size() && p > 0;
+    }
+
     public void nouvTour() {
         ++nbTour;
-        recherchePosLibre();
-        assertFalse(destinations.isEmpty());
+        Scanner sc = new Scanner(System.in);
         if (nbTour % 2 == 1) {
             if (J1.getIdPiece() == 'R') {
                 elements.getFirst().setEnMouvement(true);
-                //TODO
-                elements.getFirst().setEnMouvement(false);
+                recherchePosLibre();
+                assertFalse(destinations.isEmpty());
+                System.out.println(toString());
+                System.out.print("\nPuisse le Joueur 1 choisir une destination entre 1 et " + destinations.size() + " : ");
+                int n;
+                while (true) {
+                    n = sc.nextInt();
+                    if (n > destinations.size() || n < 1) {
+                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
+                    }
+                    else
+                        break;
+                }
+                elements.removeFirst();
+                elements.addFirst(new Element('R', destinations.get(n-1).getXa(), destinations.get(n-1).getYa(), destinations.get(n-1).getXb(), destinations.get(n-1).getYb()));
+                destinations.clear();
                 pointsPourRouge(J1);
+                pointsPourBleu(J2);
             }
             else if (J1.getIdPiece() == 'B') {
                 elements.get(2).setEnMouvement(true);
-                //TODO
+                System.out.println(toString());
+                System.out.println("\nPuisse le Joueur 1 choisir une destination entre 1 et " + destinations.size() + " : ");
+                int n;
+                while(true) {
+                    n = sc.nextInt();
+                    if (n > destinations.size() || n < 1) {
+                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
+                    }
+                    else
+                        break;
+                }
                 elements.get(2).setEnMouvement(false);
                 pointsPourBleu(J1);
             }
@@ -261,13 +312,33 @@ public class Plateau {
         else {
             if (J2.getIdPiece() == 'R') {
                 elements.getFirst().setEnMouvement(true);
-                //TODO
+                System.out.println(toString());
+                System.out.println("\nPuisse le Joueur 2 choisir une destination entre 1 et " + destinations.size() + " : ");
+                int n;
+                while (true) {
+                    n = sc.nextInt();
+                    if (n > destinations.size() || n < 1) {
+                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
+                    }
+                    else
+                        break;
+                }
                 elements.getFirst().setEnMouvement(false);
                 pointsPourRouge(J2);
             }
             else if (J2.getIdPiece() == 'B') {
                 elements.get(2).setEnMouvement(true);
-                //TODO
+                System.out.println(toString());
+                System.out.println("\nPuisse le Joueur 2 choisir une destination entre 1 et " + destinations.size() + " : ");
+                int n;
+                while (true) {
+                    n = sc.nextInt();
+                    if (n > destinations.size() || n < 1) {
+                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
+                    }
+                    else
+                        break;
+                }
                 elements.get(2).setEnMouvement(false);
                 pointsPourBleu(J2);
             }
@@ -275,7 +346,7 @@ public class Plateau {
         System.out.println(toString());
         System.out.print("\nCompteur points Joueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur());
         System.out.print("\nCompteur points Joueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + "\n");
-        System.out.println("\n Nombre de destinations disponible : " + destinations.size());
+        System.out.println("\nNombre de destinations disponibles : " + destinations.size());
     }
 
     private void jouer() {
@@ -314,18 +385,24 @@ public class Plateau {
                     Destination d = occupante(l, c);
                     if (c > 0 && c < largeur-1) {
                         if (d != null) {
-                            str.append(e == null ? "     " + d.getId() + "     " : "     " + (e.estEnMouvement() ? d.getId() : e.getId()) + "     ");
+                            str.append(e == null ? "     " + d.getId() + "     " : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
                         }
-                        str.append(e == null ? "           " : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
+                        else
+                            str.append(e == null ? "           " : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
                     }
                     else if (c == 0) {
                         if (d != null) {
-                            str.append(e == null ? "     " + d.getId() + "     " : "     " + (e.estEnMouvement() ? d.getId() : e.getId()) + "     ");
+                            str.append(e == null ? "*     " + d.getId() + "     *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
                         }
-                        str.append(e == null ? "*           *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
+                        else
+                            str.append(e == null ? "*           *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
                     }
                     else if (c == largeur-1) {
-                        str.append(e == null ? "*     O     *" : "*     " + (e.estEnMouvement() ? "O" : e.getId()) + "     *");
+                        if (d != null) {
+                            str.append(e == null ? "*     " + d.getId() + "     *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
+                        }
+                        else
+                            str.append(e == null ? "*     O     *" : "*     " + (e.estEnMouvement() ? "O" : e.getId()) + "     *");
                     }
                 }
                 str.append("\n*           *           *           *\n");

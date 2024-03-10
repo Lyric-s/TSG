@@ -9,7 +9,7 @@ public class Element {
     private boolean enMouvement;
 
     public Element(char id, int xa, int ya, int xb, int yb) {
-        assertTrue(xa == xb || ya == yb);
+        assertTrue((xb-xa)+(yb-ya)==1 || (xb-xa)+(ya-yb)==1 || (ya-yb)+(xa-xb)==1 || (yb-ya)+(xa-xb)==1);
         this.id = id;
         this.xa = xa;
         this.ya = ya;
