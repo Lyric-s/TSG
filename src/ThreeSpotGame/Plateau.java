@@ -8,12 +8,12 @@ import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Plateau {
-    private enum Langage {
+    private enum Langages {
         FRANCAIS, ENGLISH;
     }
-    private Langage langue;
+    private Langages langue;
     private final int largeur, hauteur;
-    private final LinkedList<Element> elements;
+    private final LinkedList<Piece> pieces;
     private final LinkedList<Destination> destinations;
     private final LinkedList<Spot> spots;
     private final Joueur J1, J2;
@@ -99,10 +99,10 @@ public class Plateau {
         }
     }
     public Plateau() {
-        this.langue = Langage.FRANCAIS;
+        this.langue = Langages.FRANCAIS;
         this.largeur = 3;
         this.hauteur = 3;
-        this.elements = new LinkedList<>();
+        this.pieces = new LinkedList<>();
         this.destinations = new LinkedList<>();
         this.spots = new LinkedList<>();
         this.J1 = new Joueur();
@@ -110,8 +110,8 @@ public class Plateau {
         this.nbTour = 0;
     }
 
-    private void ajouter(Element e) {
-        elements.add(e);
+    private void ajouter(Piece e) {
+        pieces.add(e);
     }
 
     private void ajouter(Spot s) {
@@ -145,8 +145,8 @@ public class Plateau {
             }
     }
 
-    private Element occupant(int l, int c) {
-        for (Element e: elements) {
+    private Piece occupant(int l, int c) {
+        for (Piece e: pieces) {
             if (e.occupe(l, c))
                 return e;
         }
@@ -154,13 +154,13 @@ public class Plateau {
     }
 
     private void initPiecesPlateau() {
-        elements.clear();
-        ajouter(new Element('R',0,1,0,2));
-        ajouter(new Element('W',1,1,1,2));
-        ajouter(new Element('B',2,1,2,2));
-        assertEquals('R', elements.getFirst().getId());
-        assertEquals('W', elements.get(1).getId());
-        assertEquals('B', elements.get(2).getId());
+        pieces.clear();
+        ajouter(new Piece('R',0,1,0,2));
+        ajouter(new Piece('W',1,1,1,2));
+        ajouter(new Piece('B',2,1,2,2));
+        assertEquals('R', pieces.getFirst().getId());
+        assertEquals('W', pieces.get(1).getId());
+        assertEquals('B', pieces.get(2).getId());
         ajouter(new Spot(0,2));
         ajouter(new Spot(1,2));
         ajouter(new Spot(2,2));
@@ -195,7 +195,7 @@ public class Plateau {
                 System.out.print("          | Joueur 2 : R |\n\n");
                 break;
             } else if ("(English)".equals(couleurPiece)) {
-                this.langue = Langage.ENGLISH;
+                this.langue = Langages.ENGLISH;
                 System.out.print("\n\n*--- The language has been successfully changed to English! ---*\n\n");
                 System.out.print("Player 1 chooses his piece (Red/Blue) : ");
                 while (true) {
@@ -230,11 +230,11 @@ public class Plateau {
     }
 
     private boolean rougeEstSurSpot(Spot s) {
-        return elements.getFirst().occupe(s.getX(),s.getY());
+        return pieces.getFirst().occupe(s.getX(),s.getY());
     }
 
     private boolean bleuEstSurSpot(Spot s) {
-        return elements.get(2).occupe(s.getX(),s.getY());
+        return pieces.get(2).occupe(s.getX(),s.getY());
     }
 
     private void pointsPourRouge(Joueur j) {
@@ -254,7 +254,7 @@ public class Plateau {
     }
 
     private boolean sontNonOccupees(int xa, int ya, int xb, int yb) {
-        for (Element e: elements) {
+        for (Piece e: pieces) {
             if (e.occupe(xa, ya, xb, yb))
                 return false;
         }
@@ -262,7 +262,7 @@ public class Plateau {
     }
 
     private boolean estNonOccupee(int x, int y) {
-        for (Element e: elements) {
+        for (Piece e: pieces) {
             if (e.occupe(x, y) && !e.estEnMouvement())
                 return false;
         }
@@ -297,13 +297,17 @@ public class Plateau {
 
     private int entreePosition() {
         Scanner scanPosition = new Scanner(System.in);
-        int position;
+        String temp;
+        int position = 0;
         while (true) {
-            position = scanPosition.nextInt();
+            temp = scanPosition.next();
+            if (temp.charAt(0) == '1' || temp.charAt(0) == '2' || temp.charAt(0) == '3' || temp.charAt(0) == '4') {
+                position = temp.charAt(0) - '0';
+            }
             if (position > destinations.size() || position < 1) {
-                if (this.langue.equals(Langage.ENGLISH))
+                if (this.langue.equals(Langages.ENGLISH))
                     System.out.print("\nERROR: unknown position.\nTry again: ");
-                else if (this.langue.equals(Langage.FRANCAIS))
+                else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.print("\nERREUR : position inexistante.\nRéessayez : ");
             }
             else
@@ -315,51 +319,51 @@ public class Plateau {
     private void deplacementPieceJoueur(int numJoueur, char idPiece) {
         int position;
         if (idPiece == 'R') {
-            elements.getFirst().setEnMouvement(true);
+            pieces.getFirst().setEnMouvement(true);
             recherchePosLibre();
             assertFalse(destinations.isEmpty());
             System.out.println(this);
-            if (this.langue.equals(Langage.ENGLISH))
-                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(R) Choice of destination [1 ; " + destinations.size() + "] : ");
-            else if (this.langue.equals(Langage.FRANCAIS))
+            if (this.langue.equals(Langages.ENGLISH))
+                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(R) Destination choice [1 ; " + destinations.size() + "] : ");
+            else if (this.langue.equals(Langages.FRANCAIS))
                 System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(R) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
-            elements.removeFirst();
-            elements.addFirst(new Element('R', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
+            pieces.removeFirst();
+            pieces.addFirst(new Piece('R', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
             viderDestinations();
         }
         else if (idPiece == 'W') {
-            elements.get(1).setEnMouvement(true);
+            pieces.get(1).setEnMouvement(true);
             recherchePosLibre();
             assertFalse(destinations.isEmpty());
             System.out.println(this);
-            if (this.langue.equals(Langage.ENGLISH))
-                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(W) Choice of destination [1 ; " + destinations.size() + "] : ");
-            else if (this.langue.equals(Langage.FRANCAIS))
+            if (this.langue.equals(Langages.ENGLISH))
+                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(W) Destination choice [1 ; " + destinations.size() + "] : ");
+            else if (this.langue.equals(Langages.FRANCAIS))
                 System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(W) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
-            elements.remove(1);
-            elements.add(1, new Element('W', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
+            pieces.remove(1);
+            pieces.add(1, new Piece('W', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
             viderDestinations();
         }
         else if (idPiece == 'B') {
-            elements.get(2).setEnMouvement(true);
+            pieces.get(2).setEnMouvement(true);
             recherchePosLibre();
             assertFalse(destinations.isEmpty());
             System.out.println(this);
-            if (this.langue.equals(Langage.ENGLISH))
-                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(B) Choice of destination [1 ; " + destinations.size() + "] : ");
-            else if (this.langue.equals(Langage.FRANCAIS))
+            if (this.langue.equals(Langages.ENGLISH))
+                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(B) Destination choice [1 ; " + destinations.size() + "] : ");
+            else if (this.langue.equals(Langages.FRANCAIS))
                 System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(B) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
-            elements.remove(2);
-            elements.add(2, new Element('B', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
+            pieces.remove(2);
+            pieces.add(2, new Piece('B', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
             viderDestinations();
         }
     }
 
     private void initThreeSpotGame() {
-        elements.clear();
+        pieces.clear();
         initPiecesPlateau();
         initJoueursThreeSpotGame();
     }
@@ -392,11 +396,11 @@ public class Plateau {
         }
         System.out.println(this);
         System.out.println("\n*----------- Nouveau tour ----------*\n");
-        if (this.langue.equals(Langage.ENGLISH)) {
+        if (this.langue.equals(Langages.ENGLISH)) {
             System.out.print("\nPlayer 1" + (J1.getIdPiece() == 'R' ? " (Red piece) : " : " (Blue piece) : ") + J1.getNbPointJoueur() + "points");
             System.out.print("\nPlayer 2" + (J2.getIdPiece() == 'R' ? " (Red piece) : " : " (Blue piece) : ") + J2.getNbPointJoueur() + "points\n");
         }
-        else if (this.langue.equals(Langage.FRANCAIS)) {
+        else if (this.langue.equals(Langages.FRANCAIS)) {
             System.out.print("\nJoueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur() + "points");
             System.out.print("\nJoueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + "points\n");
         }
@@ -415,49 +419,49 @@ public class Plateau {
                 nouvTour();
             }
             if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() >= 6) {
-                if (this.langue.equals(Langage.ENGLISH))
-                    System.out.println("*------- Victory of Player 2 -------*\n");
-                else if (this.langue.equals(Langage.FRANCAIS))
+                if (this.langue.equals(Langages.ENGLISH))
+                    System.out.println("*------ Victory from Player 2 ------*\n");
+                else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.println("*------- Victoire du Joueur 2 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() >= 6) {
-                if (this.langue.equals(Langage.ENGLISH))
-                    System.out.println("*------- Victory of Player 1 -------*\n");
-                else if (this.langue.equals(Langage.FRANCAIS))
+                if (this.langue.equals(Langages.ENGLISH))
+                    System.out.println("*------ Victory from Player 1 ------*\n");
+                else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.println("*------- Victoire du Joueur 1 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() < 6) {
-                if (this.langue.equals(Langage.ENGLISH))
-                    System.out.println("*------- Victory of Player 2 -------*\n");
-                else if (this.langue.equals(Langage.FRANCAIS))
+                if (this.langue.equals(Langages.ENGLISH))
+                    System.out.println("*------ Victory from Player 2 ------*\n");
+                else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.println("*------- Victoire du Joueur 2 ------*\n");
             } else if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() < 6) {
-                if (this.langue.equals(Langage.ENGLISH))
-                    System.out.println("*------- Victory of Player 1 -------*\n");
-                else if (this.langue.equals(Langage.FRANCAIS))
+                if (this.langue.equals(Langages.ENGLISH))
+                    System.out.println("*------ Victory from Player 1 ------*\n");
+                else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.println("*------- Victoire du Joueur 1 ------*\n");
             }
             while (true) {
-                if (this.langue.equals(Langage.ENGLISH)) {
+                if (this.langue.equals(Langages.ENGLISH)) {
                     System.out.println("Play again ? (yes/no) : ");
                     ouiNon = sc.next();
                     if (ouiNon.equals("no")) {
-                        System.out.print("\nThanks for playing! ❤\uFE0F");
+                        System.out.print("\nThanks for playing! ✌\uFE0F");
                         break;
                     } else if (ouiNon.equals("yes")) {
                         break;
                     }
                 }
-                else if (this.langue.equals(Langage.FRANCAIS)) {
+                else if (this.langue.equals(Langages.FRANCAIS)) {
                     System.out.print("Faire une nouvelle partie ? (oui/non) : ");
                     ouiNon = sc.next();
                     if (ouiNon.equals("non")) {
-                        System.out.print("\nMerci d'avoir joué ! ❤\uFE0F");
+                        System.out.print("\nMerci d'avoir joué ! ✌\uFE0F");
                         break;
                     } else if (ouiNon.equals("oui")) {
                         break;
                     }
                 }
             }
-            if ((ouiNon.equals("non") && this.langue.equals(Langage.FRANCAIS) || (ouiNon.equals("no") && this.langue.equals(Langage.ENGLISH)))) {
+            if ((ouiNon.equals("non") && this.langue.equals(Langages.FRANCAIS) || (ouiNon.equals("no") && this.langue.equals(Langages.ENGLISH)))) {
                 break;
             }
         }
@@ -469,7 +473,7 @@ public class Plateau {
         if (destinations.isEmpty()) {
             for (int l = 0; l < hauteur; ++l) {
                 for (int c = 0; c < largeur; ++c) {
-                    Element e = occupant(l, c);
+                    Piece e = occupant(l, c);
                     if (c > 0 && c < largeur-1) {
                         str.append(e == null ? "           " : "     " + e.getId() + "     ");
                     }
@@ -488,7 +492,7 @@ public class Plateau {
             ArrayList<Destination> listDestTempo = new ArrayList<>();
             for (int l = 0; l < hauteur; ++l) {
                 for (int c = 0; c < largeur; ++c) {
-                    Element e = occupant(l, c);
+                    Piece e = occupant(l, c);
                     Destination d = occupante(l, c);
                     listDestTempo.clear();
                     destinationsOccupantes(listDestTempo, l, c);
