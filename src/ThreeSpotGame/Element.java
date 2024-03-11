@@ -105,6 +105,13 @@ public class Element {
 //            yb += 1;
 //        }
 //    }
+    public boolean estVerticale() {
+        return this.ya==this.yb && this.xb-this.xa == 1;
+    }
+
+    public boolean estHorizontale() {
+        return this.xa==this.xb && this.yb-this.ya == 1;
+    }
 
     public boolean occupe(int x, int y) {
         return this.xa == x && this.ya == y || this.xb == x && this.yb == y;

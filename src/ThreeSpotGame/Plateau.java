@@ -49,7 +49,7 @@ public class Plateau {
 
         public Destination(int xa, int ya, int xb, int yb) {
             ++nbDestinations;
-            String s = String.valueOf(nbDestinations);
+            String s = valueOf(nbDestinations);
             this.xa = xa;
             this.ya = ya;
             this.xb = xb;
@@ -86,13 +86,16 @@ public class Plateau {
         }
 
         public boolean occupeA(int xa, int ya) {
-            return this.xa == xa || this.ya == ya;
+            return this.xa == xa && this.ya == ya;
         }
 
         public boolean occupeB(int xb, int yb) {
-            return this.xb == xb || this.yb == yb;
+            return this.xb == xb && this.yb == yb;
         }
 
+        public static void resetNbDestination() {
+            Destination.nbDestinations = 0;
+        }
     }
     public Plateau() {
         this.largeur = 3;
@@ -118,6 +121,11 @@ public class Plateau {
         destinations.add(d);
     }
 
+    private void viderDestinations() {
+        destinations.clear();
+        Destination.resetNbDestination();
+    }
+
     private Destination occupante(int l, int c) {
         for (Destination d: destinations) {
             if (d.estVerticale() && d.occupeB(l, c))
@@ -126,6 +134,18 @@ public class Plateau {
                 return d;
         }
         return null;
+    }
+
+    private void destinationsOccupantes(ArrayList<Destination> listDest, int l, int c) {
+        for (Destination d: destinations) {
+            if (d.estVerticale() && d.occupeB(l, c) || d.estHorizontale() && d.occupeA(l, c))
+                listDest.add(d);
+        }
+        if (!listDest.isEmpty())
+            if (listDest.getFirst().estHorizontale()) {
+                listDest.addFirst(listDest.getLast());
+                listDest.removeLast();
+            }
     }
 
     private Element occupant(int l, int c) {
@@ -137,6 +157,7 @@ public class Plateau {
     }
 
     private void initPiecesPlateau() {
+        elements.clear();
         ajouter(new Element('R',0,1,0,2));
         ajouter(new Element('W',1,1,1,2));
         ajouter(new Element('B',2,1,2,2));
@@ -154,17 +175,19 @@ public class Plateau {
 
     private void initJoueursThreeSpotGame() {
         String couleurPiece;
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Joueur " + J1.getIdJoueur() + " choisit la pièce 'Rouge' ou 'Bleue': ");
+        Scanner scanCouleur = new Scanner(System.in);
+        J1.setNbPointJoueur(0);
+        J2.setNbPointJoueur(0);
+        System.out.print("Joueur 1 choisit sa pièce (Rouge/Bleue) : ");
         while(true) {
-            couleurPiece = sc.next();
+            couleurPiece = scanCouleur.next();
             if ("Rouge".equals(couleurPiece)) {
                 J1.setIdPiece('R');
                 J2.setIdPiece('B');
                 assertEquals('R', J1.getIdPiece());
                 assertEquals('B', J2.getIdPiece());
-                System.out.print("Joueur 1 : 'R'");
-                System.out.print("\nJoueur 2 : 'B'\n\n");
+                System.out.print("\n          | Joueur 1 : R |\n");
+                System.out.print("          | Joueur 2 : B |\n\n");
                 break;
             }
             else if ("Bleue".equals(couleurPiece)) {
@@ -172,8 +195,8 @@ public class Plateau {
                 J2.setIdPiece('R');
                 assertEquals('B', J1.getIdPiece());
                 assertEquals('R', J2.getIdPiece());
-                System.out.print("Joueur 1 : 'B'");
-                System.out.print("\nJoueur 2 : 'R'\n\n");
+                System.out.print("\n          | Joueur 1 : B |\n");
+                System.out.print("          | Joueur 2 : R |\n\n");
                 break;
             }
             else
@@ -183,10 +206,6 @@ public class Plateau {
 
     private boolean rougeEstSurSpot(Spot s) {
         return elements.getFirst().occupe(s.getX(),s.getY());
-    }
-
-    private boolean blancEstSurSpot(Spot s) {
-        return elements.get(1).occupe(s.getX(),s.getY());
     }
 
     private boolean bleuEstSurSpot(Spot s) {
@@ -213,7 +232,7 @@ public class Plateau {
         return (e.getXa() >= 0 && e.getYa() >= 0 && e.getXb() < hauteur && e.getYb() < hauteur);
     }
 
-    private boolean estNonOccupee(int xa, int ya, int xb, int yb) {
+    private boolean sontNonOccupees(int xa, int ya, int xb, int yb) {
         for (Element e: elements) {
             if (e.occupe(xa, ya, xb, yb))
                 return false;
@@ -223,7 +242,7 @@ public class Plateau {
 
     private boolean estNonOccupee(int x, int y) {
         for (Element e: elements) {
-            if (e.occupe(x, y))
+            if (e.occupe(x, y) && !e.estEnMouvement())
                 return false;
         }
         return true;
@@ -231,7 +250,7 @@ public class Plateau {
 
     private boolean estPosNonOccupee(int xa, int ya, int xb, int yb) {
         for (Destination d: destinations) {
-            if (d.estVerticale() && d.occupeA(xa, ya) || d.estHorizontale() && d.occupeB(xb, yb))
+            if (d.estVerticale() && d.occupeB(xb, yb) && d.occupeA(xa, ya) || d.estHorizontale() && d.occupeA(xa, ya) && d.occupeB(xb, yb))
                 return false;
         }
         return true;
@@ -244,16 +263,67 @@ public class Plateau {
             for (int ya = 0; ya < largeur; ++ya) {
                 for (int xb = 0; xb < hauteur; ++xb) {
                     for (int yb = 0; yb < largeur; ++yb) {
-                        if (((ya==yb && xb-xa == 1 || xa==xb && yb-ya == 1) && estNonOccupee(xa, ya, xb, yb))) {
+                        if ((ya==yb && xb-xa == 1 || xa==xb && yb-ya == 1) && estNonOccupee(xa, ya) && estNonOccupee(xb, yb) && sontNonOccupees(xa, ya, xb, yb)) {
                             if (destinations.isEmpty())
                                 destinations.add(new Destination(xa, ya, xb, yb));
-                            else if (estPosNonOccupee(xa, ya, xb, yb) && estPosNonOccupee(xb, yb, xa, ya)) {
+                            else if (estPosNonOccupee(xa, ya, xb, yb)) {
                                 destinations.add(new Destination(xa, ya, xb, yb));
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private int entreePosition() {
+        Scanner scanPosition = new Scanner(System.in);
+        int position;
+        while (true) {
+            position = scanPosition.nextInt();
+            if (position > destinations.size() || position < 1) {
+                System.out.print("\nERREUR : position inexistante\nRéessayez : ");
+            }
+            else
+                break;
+        }
+        return --position;
+    }
+
+    private void deplacementPieceJoueur(int numJoueur, char idPiece) {
+        int position;
+        if (idPiece == 'R') {
+            elements.getFirst().setEnMouvement(true);
+            recherchePosLibre();
+            assertFalse(destinations.isEmpty());
+            System.out.println(toString());
+            System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(R) Choix de destination [1 ; " + destinations.size() + "] : ");
+            position = entreePosition();
+            elements.removeFirst();
+            elements.addFirst(new Element('R', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
+            viderDestinations();
+        }
+        else if (idPiece == 'W') {
+            elements.get(1).setEnMouvement(true);
+            recherchePosLibre();
+            assertFalse(destinations.isEmpty());
+            System.out.println(toString());
+            System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(W) Choix de destination [1 ; " + destinations.size() + "] : ");
+            position = entreePosition();
+            elements.remove(1);
+            elements.add(1, new Element('W', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
+            viderDestinations();
+        }
+        else if (idPiece == 'B') {
+            elements.get(2).setEnMouvement(true);
+            recherchePosLibre();
+            assertFalse(destinations.isEmpty());
+            System.out.println(toString());
+            System.out.print("\n*--------- Tour du Joueur " + numJoueur + " ---------*\n\n(B) Choix de destination [1 ; " + destinations.size() + "] : ");
+            position = entreePosition();
+            elements.remove(2);
+            elements.add(2, new Element('B', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
+            viderDestinations();
         }
     }
 
@@ -269,90 +339,65 @@ public class Plateau {
 
     public void nouvTour() {
         ++nbTour;
-        Scanner sc = new Scanner(System.in);
+        int position;
         if (nbTour % 2 == 1) {
             if (J1.getIdPiece() == 'R') {
-                elements.getFirst().setEnMouvement(true);
-                recherchePosLibre();
-                assertFalse(destinations.isEmpty());
-                System.out.println(toString());
-                System.out.print("\nPuisse le Joueur 1 choisir une destination entre 1 et " + destinations.size() + " : ");
-                int n;
-                while (true) {
-                    n = sc.nextInt();
-                    if (n > destinations.size() || n < 1) {
-                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
-                    }
-                    else
-                        break;
-                }
-                elements.removeFirst();
-                elements.addFirst(new Element('R', destinations.get(n-1).getXa(), destinations.get(n-1).getYa(), destinations.get(n-1).getXb(), destinations.get(n-1).getYb()));
-                destinations.clear();
+                deplacementPieceJoueur(1,'R');
+                deplacementPieceJoueur(1,'W');
                 pointsPourRouge(J1);
-                pointsPourBleu(J2);
             }
             else if (J1.getIdPiece() == 'B') {
-                elements.get(2).setEnMouvement(true);
-                System.out.println(toString());
-                System.out.println("\nPuisse le Joueur 1 choisir une destination entre 1 et " + destinations.size() + " : ");
-                int n;
-                while(true) {
-                    n = sc.nextInt();
-                    if (n > destinations.size() || n < 1) {
-                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
-                    }
-                    else
-                        break;
-                }
-                elements.get(2).setEnMouvement(false);
+                deplacementPieceJoueur(1,'B');
+                deplacementPieceJoueur(1,'W');
                 pointsPourBleu(J1);
             }
         }
         else {
             if (J2.getIdPiece() == 'R') {
-                elements.getFirst().setEnMouvement(true);
-                System.out.println(toString());
-                System.out.println("\nPuisse le Joueur 2 choisir une destination entre 1 et " + destinations.size() + " : ");
-                int n;
-                while (true) {
-                    n = sc.nextInt();
-                    if (n > destinations.size() || n < 1) {
-                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
-                    }
-                    else
-                        break;
-                }
-                elements.getFirst().setEnMouvement(false);
+                deplacementPieceJoueur(2,'R');
+                deplacementPieceJoueur(2,'W');
                 pointsPourRouge(J2);
             }
             else if (J2.getIdPiece() == 'B') {
-                elements.get(2).setEnMouvement(true);
-                System.out.println(toString());
-                System.out.println("\nPuisse le Joueur 2 choisir une destination entre 1 et " + destinations.size() + " : ");
-                int n;
-                while (true) {
-                    n = sc.nextInt();
-                    if (n > destinations.size() || n < 1) {
-                        System.out.print("\nERREUR : position inexistante\nRéeessayez : ");
-                    }
-                    else
-                        break;
-                }
-                elements.get(2).setEnMouvement(false);
+                deplacementPieceJoueur(2,'B');
+                deplacementPieceJoueur(2,'W');
                 pointsPourBleu(J2);
             }
         }
         System.out.println(toString());
-        System.out.println("\nEspion : xb de rouge = " + elements.getFirst().getXb() + "\n");
-        System.out.println("Espion : yb de rouge = " + elements.getFirst().getYb() + "\n");
-        System.out.print("\nCompteur points Joueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur());
-        System.out.print("\nCompteur points Joueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + "\n");
-        System.out.println("\nNombre de destinations disponibles : " + destinations.size());
+        System.out.print("\nJoueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur() + "points");
+        System.out.print("\nJoueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + "points\n");
+//        if (J1.getNbPointJoueur() < 12 && J2.getNbPointJoueur() < 12)
+//            System.out.println("\nNombre de destinations disponibles : " + destinations.size());
     }
 
-    private void jouer() {
-        nouvTour();
+    public void jouerThreeSpotGame() {
+        Scanner sc = new Scanner(System.in);
+        String ouiNon;
+        while (true) {
+            initThreeSpotGame();
+            while (!finDePartie()) {
+                nouvTour();
+            }
+            if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() >= 6) {
+                System.out.println("*------- Victoire du Joueur 2 ------*\n");
+            }
+            else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() >= 6) {
+                System.out.println("*------- Victoire du Joueur 1 ------*\n");
+            }
+            else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() < 6) {
+                System.out.println("*------- Victoire du Joueur 2 ------*\n");
+            }
+            else if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() < 6) {
+                System.out.println("*------- Victoire du Joueur 1 ------*\n");
+            }
+            System.out.print("Faire une nouvelle partie ? (oui/non) : ");
+            ouiNon = sc.next();
+            if (ouiNon.equals("non")) {
+                System.out.print("\n\nMerci d'avoir joué !");
+                break;
+            }
+        }
     }
 
     public boolean finDePartie() {
@@ -381,30 +426,33 @@ public class Plateau {
             }
         }
         else {
+            ArrayList<Destination> listDestTempo = new ArrayList<>();
             for (int l = 0; l < hauteur; ++l) {
                 for (int c = 0; c < largeur; ++c) {
                     Element e = occupant(l, c);
                     Destination d = occupante(l, c);
+                    listDestTempo.clear();
+                    destinationsOccupantes(listDestTempo, l, c);
                     if (c > 0 && c < largeur-1) {
                         if (d != null) {
-                            str.append(e == null ? "     " + d.getId() + "     " : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   " : "     " + d.getId() + "     ") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   " : "     " + d.getId() + "     ") : "     " + e.getId() + "    "));
                         }
                         else
-                            str.append(e == null ? "           " : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   " : "           ") : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
                     }
                     else if (c == 0) {
                         if (d != null) {
-                            str.append(e == null ? "*     " + d.getId() + "     *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : "*     " + e.getId() + "    *"));
                         }
                         else
-                            str.append(e == null ? "*           *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*           *") : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
                     }
                     else if (c == largeur-1) {
                         if (d != null) {
-                            str.append(e == null ? "*     " + d.getId() + "     *" : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : "*     " + e.getId() + "    *"));
                         }
                         else
-                            str.append(e == null ? "*     O     *" : "*     " + (e.estEnMouvement() ? "O" : e.getId()) + "     *");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     O     *"): "*     " + (e.estEnMouvement() ? "O" : e.getId()) + "     *");
                     }
                 }
                 str.append("\n*           *           *           *\n");

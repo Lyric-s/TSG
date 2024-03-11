@@ -34,4 +34,8 @@ public class Joueur {
     public void incNbPointsJoueur() {
         ++nbPointJoueur;
     }
+
+    public void setNbPointJoueur(int nbPointJoueur) {
+        this.nbPointJoueur = nbPointJoueur;
+    }
 }
