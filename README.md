@@ -1,1 +1,1 @@
-https://moodle.u-paris.fr/pluginfile.php/2351536/mod_resource/content/1/3SpotGame.pdf
+[3 SPOT GAME.pdf](https://github.com/Lyric-s/TSG/files/14564331/3.SPOT.GAME.pdf)
