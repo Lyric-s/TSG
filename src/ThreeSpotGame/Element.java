@@ -1,11 +1,10 @@
 package ThreeSpotGame;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Element {
     private final char id;
-    private int xa, ya, xb, yb;
+    private final int xa, ya, xb, yb;
     private boolean enMouvement;
 
     public Element(char id, int xa, int ya, int xb, int yb) {
@@ -46,65 +45,6 @@ public class Element {
         this.enMouvement = enMouvement;
     }
 
-    //    public void deplacerNord() {
-//        xa -= 1;
-//        xb -= 1;
-//    }
-//    public void deplacerSud() {
-//        xa += 1;
-//        xb += 1;
-//    }
-//    public void deplacerEst() {
-//        ya += 1;
-//        yb += 1;
-//    }
-//    public void deplacerOuest() {
-//        ya -= 1;
-//        yb -= 1;
-//    }
-
-//    public void deplaceDiagonaDescGauche() {
-//        x += 1;
-//        y += 1;
-//    }
-
-//    public void pivoterPlus() {
-//        if (ya == yb && xa < xb) {
-//            xb -= 1;
-//            yb -= 1;
-//        }
-//        else if (ya == yb && xa > xb) {
-//            xb += 1;
-//            yb += 1;
-//        }
-//        else if (xa == xb && ya > yb) {
-//            xb -= 1;
-//            yb += 1;
-//        }
-//        else {
-//            xb += 1;
-//            yb -= 1;
-//        }
-//    }
-
-//    public void pivoterMoins() {
-//        if (ya == yb && xa < xb) {
-//            xb -= 1;
-//            yb += 1;
-//        }
-//        else if (ya == yb && xa > xb) {
-//            xb += 1;
-//            yb -= 1;
-//        }
-//        else if (xa == xb && ya > yb) {
-//            xb += 1;
-//            yb -= 1;
-//        }
-//        else {
-//            xb -= 1;
-//            yb += 1;
-//        }
-//    }
     public boolean estVerticale() {
         return this.ya==this.yb && this.xb-this.xa == 1;
     }
