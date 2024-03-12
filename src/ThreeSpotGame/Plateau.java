@@ -41,6 +41,10 @@ public class Plateau {
         public int getY() {
             return y;
         }
+
+        public static void resetNbSpots() {
+            Spot.nbSpots = 0;
+        }
     }
 
     private class Destination {
@@ -94,7 +98,7 @@ public class Plateau {
             return this.xb == xb && this.yb == yb;
         }
 
-        public static void resetNbDestination() {
+        public static void resetNbDestinations() {
             Destination.nbDestinations = 0;
         }
     }
@@ -118,9 +122,14 @@ public class Plateau {
         spots.add(s);
     }
 
+    private void viderSpots() {
+        spots.clear();
+        Spot.resetNbSpots();
+    }
+
     private void viderDestinations() {
         destinations.clear();
-        Destination.resetNbDestination();
+        Destination.resetNbDestinations();
     }
 
     private Destination occupante(int l, int c) {
@@ -155,6 +164,7 @@ public class Plateau {
 
     private void initPiecesPlateau() {
         pieces.clear();
+        viderSpots();
         ajouter(new Piece('R',0,1,0,2));
         ajouter(new Piece('W',1,1,1,2));
         ajouter(new Piece('B',2,1,2,2));
@@ -175,56 +185,87 @@ public class Plateau {
         Scanner scanCouleur = new Scanner(System.in);
         J1.setNbPointJoueur(0);
         J2.setNbPointJoueur(0);
-        System.out.print("Joueur 1 choisit sa pièce (Rouge/Bleue) : ");
+        if (this.langue.equals(Langages.ENGLISH))
+            System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
+        else if (this.langue.equals(Langages.FRANCAIS))
+            System.out.print("Joueur 1 doit choisir sa pièce de couleur (Rouge/Bleue) : ");
         while(true) {
             couleurPiece = scanCouleur.next();
-            if ("Rouge".equals(couleurPiece)) {
-                J1.setIdPiece('R');
-                J2.setIdPiece('B');
-                assertEquals('R', J1.getIdPiece());
-                assertEquals('B', J2.getIdPiece());
-                System.out.print("\n          | Joueur 1 : R |\n");
-                System.out.print("          | Joueur 2 : B |\n\n");
-                break;
-            } else if ("Bleue".equals(couleurPiece)) {
-                J1.setIdPiece('B');
-                J2.setIdPiece('R');
-                assertEquals('B', J1.getIdPiece());
-                assertEquals('R', J2.getIdPiece());
-                System.out.print("\n          | Joueur 1 : B |\n");
-                System.out.print("          | Joueur 2 : R |\n\n");
-                break;
-            } else if ("(English)".equals(couleurPiece)) {
-                this.langue = Langages.ENGLISH;
-                System.out.print("\n\n*--- The language has been successfully changed to English! ---*\n\n");
-                System.out.print("Player 1 chooses his piece (Red/Blue) : ");
+            if (this.langue.equals(Langages.FRANCAIS)) {
+                if ("Rouge".equals(couleurPiece)) {
+                    J1.setIdPiece('R');
+                    J2.setIdPiece('B');
+                    assertEquals('R', J1.getIdPiece());
+                    assertEquals('B', J2.getIdPiece());
+                    System.out.print("\n          | Joueur 1 : R |\n");
+                    System.out.print("          | Joueur 2 : B |\n\n");
+                    break;
+                } else if ("Bleue".equals(couleurPiece)) {
+                    J1.setIdPiece('B');
+                    J2.setIdPiece('R');
+                    assertEquals('B', J1.getIdPiece());
+                    assertEquals('R', J2.getIdPiece());
+                    System.out.print("\n          | Joueur 1 : B |\n");
+                    System.out.print("          | Joueur 2 : R |\n\n");
+                    break;
+                } else if ("(English)".equals(couleurPiece)) {
+                    this.langue = Langages.ENGLISH;
+                    System.out.print("\n\n*--- The language of the game has been successfully set to English! ---*\n\n");
+                    System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
+                    while (true) {
+                        couleurPiece = scanCouleur.next();
+                        if ("Red".equals(couleurPiece)) {
+                            J1.setIdPiece('R');
+                            J2.setIdPiece('B');
+                            assertEquals('R', J1.getIdPiece());
+                            assertEquals('B', J2.getIdPiece());
+                            System.out.print("\n           | Player 1: R |\n");
+                            System.out.print("           | Player 2: B |\n\n");
+                            break;
+                        } else if ("Blue".equals(couleurPiece)) {
+                            J1.setIdPiece('B');
+                            J2.setIdPiece('R');
+                            assertEquals('B', J1.getIdPiece());
+                            assertEquals('R', J2.getIdPiece());
+                            System.out.print("\n           | Player 1: B |\n");
+                            System.out.print("           | Player 2: R |\n\n");
+                            break;
+                        }
+                        else {
+                            System.out.print("\nERROR: Color unknown.\nTry again: ");
+                        }
+                    }
+                    break;
+
+                } else {
+                    System.out.print("\nERREUR : Couleur non référencée.\nRéessayez : ");
+                }
+            }
+            else if (this.langue.equals(Langages.ENGLISH)) {
                 while (true) {
-                    couleurPiece = scanCouleur.next();
                     if ("Red".equals(couleurPiece)) {
                         J1.setIdPiece('R');
                         J2.setIdPiece('B');
                         assertEquals('R', J1.getIdPiece());
                         assertEquals('B', J2.getIdPiece());
-                        System.out.print("\n          | Player 1 : R |\n");
-                        System.out.print("          | Player 2 : B |\n\n");
+                        System.out.print("\n           | Player 1: R |\n");
+                        System.out.print("           | Player 2: B |\n\n");
                         break;
                     } else if ("Blue".equals(couleurPiece)) {
                         J1.setIdPiece('B');
                         J2.setIdPiece('R');
                         assertEquals('B', J1.getIdPiece());
                         assertEquals('R', J2.getIdPiece());
-                        System.out.print("\n          | Player 1 : B |\n");
-                        System.out.print("          | Player 2 : R |\n\n");
+                        System.out.print("\n           | Player 1: B |\n");
+                        System.out.print("           | Player 2: R |\n\n");
                         break;
                     }
                     else {
                         System.out.print("\nERROR: Color unknown.\nTry again: ");
                     }
+                    couleurPiece = scanCouleur.next();
                 }
                 break;
-
-            } else {
-                System.out.print("\nERREUR : Couleur non référencée.\nRéessayez : ");
             }
         }
     }
@@ -324,9 +365,9 @@ public class Plateau {
             assertFalse(destinations.isEmpty());
             System.out.println(this);
             if (this.langue.equals(Langages.ENGLISH))
-                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(R) Destination choice [1 ; " + destinations.size() + "] : ");
+                System.out.print("\n*------ Turn of Player " + numJoueur + " (1/2) -----*\n\n(R) Destination choice [1 ; " + destinations.size() + "]: ");
             else if (this.langue.equals(Langages.FRANCAIS))
-                System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(R) Choix de destination [1 ; " + destinations.size() + "] : ");
+                System.out.print("\n*------ Tour du Joueur " + numJoueur + " (1/2) -----*\n\n(R) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
             pieces.removeFirst();
             pieces.addFirst(new Piece('R', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
@@ -338,9 +379,9 @@ public class Plateau {
             assertFalse(destinations.isEmpty());
             System.out.println(this);
             if (this.langue.equals(Langages.ENGLISH))
-                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(W) Destination choice [1 ; " + destinations.size() + "] : ");
+                System.out.print("\n*------ Turn of Player " + numJoueur + " (2/2) -----*\n\n(W) Destination choice [1 ; " + destinations.size() + "]: ");
             else if (this.langue.equals(Langages.FRANCAIS))
-                System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(W) Choix de destination [1 ; " + destinations.size() + "] : ");
+                System.out.print("\n*------ Tour du Joueur " + numJoueur + " (2/2) -----*\n\n(W) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
             pieces.remove(1);
             pieces.add(1, new Piece('W', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
@@ -352,9 +393,9 @@ public class Plateau {
             assertFalse(destinations.isEmpty());
             System.out.println(this);
             if (this.langue.equals(Langages.ENGLISH))
-                System.out.print("\n*--------- Turn of Player " + numJoueur + " --------*\n\n(B) Destination choice [1 ; " + destinations.size() + "] : ");
+                System.out.print("\n*------ Turn of Player " + numJoueur + " (1/2) -----*\n\n(B) Destination choice [1 ; " + destinations.size() + "]: ");
             else if (this.langue.equals(Langages.FRANCAIS))
-                System.out.print("\n*--------- Tour du Joueur " + numJoueur + " --------*\n\n(B) Choix de destination [1 ; " + destinations.size() + "] : ");
+                System.out.print("\n*------ Tour du Joueur " + numJoueur + " (1/2) -----*\n\n(B) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
             pieces.remove(2);
             pieces.add(2, new Piece('B', destinations.get(position).getXa(), destinations.get(position).getYa(), destinations.get(position).getXb(), destinations.get(position).getYb()));
@@ -395,14 +436,21 @@ public class Plateau {
             }
         }
         System.out.println(this);
-        System.out.println("\n*----------- Nouveau tour ----------*\n");
+        if (this.langue.equals(Langages.ENGLISH) && !finDePartie())
+            System.out.println("\n\n\n*------------- NEW TURN ------------*");
+        else if (this.langue.equals(Langages.ENGLISH) && finDePartie())
+            System.out.println("\n\n\n*------------ GAME OVER ------------*");
+        else if (this.langue.equals(Langages.FRANCAIS) && !finDePartie())
+            System.out.println("\n\n\n*----------- NOUVEAU TOUR ----------*");
+        else if (this.langue.equals(Langages.FRANCAIS) && finDePartie())
+            System.out.println("\n\n\n*--------- PARTIE TERMINEE ---------*");
         if (this.langue.equals(Langages.ENGLISH)) {
-            System.out.print("\nPlayer 1" + (J1.getIdPiece() == 'R' ? " (Red piece) : " : " (Blue piece) : ") + J1.getNbPointJoueur() + "points");
-            System.out.print("\nPlayer 2" + (J2.getIdPiece() == 'R' ? " (Red piece) : " : " (Blue piece) : ") + J2.getNbPointJoueur() + "points\n");
+            System.out.print("\nPlayer 1" + (J1.getIdPiece() == 'R' ? " (Red piece): " : " (Blue piece): ") + J1.getNbPointJoueur() + " points");
+            System.out.print("\nPlayer 2" + (J2.getIdPiece() == 'R' ? " (Red piece): " : " (Blue piece): ") + J2.getNbPointJoueur() + " points\n");
         }
         else if (this.langue.equals(Langages.FRANCAIS)) {
-            System.out.print("\nJoueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur() + "points");
-            System.out.print("\nJoueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + "points\n");
+            System.out.print("\nJoueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur() + " points");
+            System.out.print("\nJoueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + " points\n");
         }
     }
 
@@ -420,34 +468,59 @@ public class Plateau {
             }
             if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() >= 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("*------ Victory from Player 2 ------*\n");
+                    System.out.println("\n*---- Victory of the Player 2 ----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
-                    System.out.println("*------- Victoire du Joueur 2 ------*\n");
+                    System.out.println("\n*------- Victoire du Joueur 2 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() >= 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("*------ Victory from Player 1 ------*\n");
+                    System.out.println("\n*---- Victory of the Player 1 ----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
-                    System.out.println("*------- Victoire du Joueur 1 ------*\n");
+                    System.out.println("\n------- Victoire du Joueur 1 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() < 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("*------ Victory from Player 2 ------*\n");
+                    System.out.println("\n*---- Victory of the Player 2 ----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
-                    System.out.println("*------- Victoire du Joueur 2 ------*\n");
+                    System.out.println("\n*------- Victoire du Joueur 2 ------*\n");
             } else if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() < 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("*------ Victory from Player 1 ------*\n");
+                    System.out.println("\n*----- Victory of the Player 1 -----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
-                    System.out.println("*------- Victoire du Joueur 1 ------*\n");
+                    System.out.println("\n*------- Victoire du Joueur 1 ------*\n");
             }
             while (true) {
                 if (this.langue.equals(Langages.ENGLISH)) {
-                    System.out.println("Play again ? (yes/no) : ");
+                    System.out.print("Play again? (yes/no): ");
                     ouiNon = sc.next();
                     if (ouiNon.equals("no")) {
                         System.out.print("\nThanks for playing! ✌\uFE0F");
                         break;
                     } else if (ouiNon.equals("yes")) {
-                        break;
+                        String ouiNonBis;
+                        while (true) {
+                            System.out.print("Change the language? (yes/no): ");
+                            ouiNonBis = sc.next();
+                            if (ouiNonBis.equals("no"))
+                                break;
+                            else if (ouiNonBis.equals("yes")) {
+                                System.out.print("Choose a language among the available ones (FRENCH: (Francais); ENGLISH: (English)): ");
+                                while (true) {
+                                    ouiNonBis = sc.next();
+                                    if (ouiNonBis.equals("(Francais)")) {
+                                        this.langue = Langages.FRANCAIS;
+                                        break;
+                                    }
+                                    else if (ouiNonBis.equals("(English)")) {
+                                        ouiNonBis = "no";
+                                        break;
+                                    }
+                                    else
+                                        System.out.print("ERROR: Unreferenced language.\nTry again: ");
+                                }
+                                break;
+                            }
+                        }
+                        if (ouiNonBis.equals("no"))
+                            break;
                     }
                 }
                 else if (this.langue.equals(Langages.FRANCAIS)) {
