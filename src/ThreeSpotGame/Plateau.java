@@ -185,6 +185,7 @@ public class Plateau {
         Scanner scanCouleur = new Scanner(System.in);
         J1.setNbPointJoueur(0);
         J2.setNbPointJoueur(0);
+        this.nbTour = 0;
         if (this.langue.equals(Langages.ENGLISH))
             System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
         else if (this.langue.equals(Langages.FRANCAIS))
@@ -210,6 +211,7 @@ public class Plateau {
                     break;
                 } else if ("(English)".equals(couleurPiece)) {
                     this.langue = Langages.ENGLISH;
+                    assertTrue(this.langue.equals(Langages.ENGLISH));
                     System.out.print("\n\n*--- The language of the game has been successfully set to English! ---*\n\n");
                     System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
                     while (true) {
@@ -468,17 +470,17 @@ public class Plateau {
             }
             if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() >= 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("\n*---- Victory of the Player 2 ----*\n");
+                    System.out.println("\n*----- Victory of the Player 2 -----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.println("\n*------- Victoire du Joueur 2 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() >= 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("\n*---- Victory of the Player 1 ----*\n");
+                    System.out.println("\n*----- Victory of the Player 1 -----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
-                    System.out.println("\n------- Victoire du Joueur 1 ------*\n");
+                    System.out.println("\n*------- Victoire du Joueur 1 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() < 6) {
                 if (this.langue.equals(Langages.ENGLISH))
-                    System.out.println("\n*---- Victory of the Player 2 ----*\n");
+                    System.out.println("\n*----- Victory of the Player 2 -----*\n");
                 else if (this.langue.equals(Langages.FRANCAIS))
                     System.out.println("\n*------- Victoire du Joueur 2 ------*\n");
             } else if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() < 6) {
@@ -507,6 +509,9 @@ public class Plateau {
                                     ouiNonBis = sc.next();
                                     if (ouiNonBis.equals("(Francais)")) {
                                         this.langue = Langages.FRANCAIS;
+                                        assertTrue(this.langue.equals(Langages.FRANCAIS));
+                                        ouiNonBis = "no";
+                                        System.out.print("\n\n*--- La langue du jeu a été mise en Français avec succès! ---*\n\n");
                                         break;
                                     }
                                     else if (ouiNonBis.equals("(English)")) {
@@ -596,6 +601,10 @@ public class Plateau {
                 if (l < hauteur-1)
                     str.append("\n*           *           *           *\n");
             }
+            if (this.langue.equals(Langages.ENGLISH) && nbTour >= 1)
+                str.append("\n            Turn number: ").append(nbTour);
+            else if (this.langue.equals(Langages.FRANCAIS) && nbTour >= 1)
+                str.append("\n           Tour numéro : ").append(nbTour);
         }
         String s;
         s = valueOf(str);
