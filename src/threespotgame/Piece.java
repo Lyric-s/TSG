@@ -1,4 +1,4 @@
-package ThreeSpotGame;
+package threespotgame;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,7 +8,7 @@ public class Piece {
     private boolean enMouvement;
 
     public Piece(char id, int xa, int ya, int xb, int yb) {
-        assertTrue((xb-xa)+(yb-ya)==1 || (xb-xa)+(ya-yb)==1 || (ya-yb)+(xa-xb)==1 || (yb-ya)+(xa-xb)==1);
+        assert((xb-xa)+(yb-ya)==1 || (xb-xa)+(ya-yb)==1 || (ya-yb)+(xa-xb)==1 || (yb-ya)+(xa-xb)==1);
         this.id = id;
         this.xa = xa;
         this.ya = ya;

@@ -1,6 +1,6 @@
-package Appli;
+package appli;
 
-import ThreeSpotGame.Plateau;
+import threespotgame.Plateau;
 
 public class Appli {
     public static void main(String[] args) {

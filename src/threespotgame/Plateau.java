@@ -1,4 +1,4 @@
-package ThreeSpotGame;
+package threespotgame;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -168,15 +168,15 @@ public class Plateau {
         ajouter(new Piece('R',0,1,0,2));
         ajouter(new Piece('W',1,1,1,2));
         ajouter(new Piece('B',2,1,2,2));
-        assertEquals('R', pieces.getFirst().getId());
-        assertEquals('W', pieces.get(1).getId());
-        assertEquals('B', pieces.get(2).getId());
+        assert('R' == pieces.getFirst().getId());
+        assert('W' == pieces.get(1).getId());
+        assert('B' == pieces.get(2).getId());
         ajouter(new Spot(0,2));
         ajouter(new Spot(1,2));
         ajouter(new Spot(2,2));
-        assertEquals(1, spots.getFirst().getIdSpot());
-        assertEquals(2, spots.get(1).getIdSpot());
-        assertEquals(3, spots.get(2).getIdSpot());
+        assert(1 == spots.getFirst().getIdSpot());
+        assert(2 == spots.get(1).getIdSpot());
+        assert(3 == spots.get(2).getIdSpot());
         System.out.println(this + "\n");
     }
 
@@ -196,22 +196,22 @@ public class Plateau {
                 if ("Rouge".equals(couleurPiece)) {
                     J1.setIdPiece('R');
                     J2.setIdPiece('B');
-                    assertEquals('R', J1.getIdPiece());
-                    assertEquals('B', J2.getIdPiece());
+                    assert('R' == J1.getIdPiece());
+                    assert('B' == J2.getIdPiece());
                     System.out.print("\n          | Joueur 1 : R |\n");
                     System.out.print("          | Joueur 2 : B |\n\n");
                     break;
                 } else if ("Bleue".equals(couleurPiece)) {
                     J1.setIdPiece('B');
                     J2.setIdPiece('R');
-                    assertEquals('B', J1.getIdPiece());
-                    assertEquals('R', J2.getIdPiece());
+                    assert('B' == J1.getIdPiece());
+                    assert('R' == J2.getIdPiece());
                     System.out.print("\n          | Joueur 1 : B |\n");
                     System.out.print("          | Joueur 2 : R |\n\n");
                     break;
                 } else if ("(English)".equals(couleurPiece)) {
                     this.langue = Langages.ENGLISH;
-                    assertTrue(this.langue.equals(Langages.ENGLISH));
+                    assert(this.langue.equals(Langages.ENGLISH));
                     System.out.print("\n\n*--- The language of the game has been successfully set to English! ---*\n\n");
                     System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
                     while (true) {
@@ -219,16 +219,16 @@ public class Plateau {
                         if ("Red".equals(couleurPiece)) {
                             J1.setIdPiece('R');
                             J2.setIdPiece('B');
-                            assertEquals('R', J1.getIdPiece());
-                            assertEquals('B', J2.getIdPiece());
+                            assert('R' == J1.getIdPiece());
+                            assert('B' == J2.getIdPiece());
                             System.out.print("\n           | Player 1: R |\n");
                             System.out.print("           | Player 2: B |\n\n");
                             break;
                         } else if ("Blue".equals(couleurPiece)) {
                             J1.setIdPiece('B');
                             J2.setIdPiece('R');
-                            assertEquals('B', J1.getIdPiece());
-                            assertEquals('R', J2.getIdPiece());
+                            assert('B' == J1.getIdPiece());
+                            assert('R' == J2.getIdPiece());
                             System.out.print("\n           | Player 1: B |\n");
                             System.out.print("           | Player 2: R |\n\n");
                             break;
@@ -248,16 +248,16 @@ public class Plateau {
                     if ("Red".equals(couleurPiece)) {
                         J1.setIdPiece('R');
                         J2.setIdPiece('B');
-                        assertEquals('R', J1.getIdPiece());
-                        assertEquals('B', J2.getIdPiece());
+                        assert('R' == J1.getIdPiece());
+                        assert('B' == J2.getIdPiece());
                         System.out.print("\n           | Player 1: R |\n");
                         System.out.print("           | Player 2: B |\n\n");
                         break;
                     } else if ("Blue".equals(couleurPiece)) {
                         J1.setIdPiece('B');
                         J2.setIdPiece('R');
-                        assertEquals('B', J1.getIdPiece());
-                        assertEquals('R', J2.getIdPiece());
+                        assert('B' == J1.getIdPiece());
+                        assert('R' == J2.getIdPiece());
                         System.out.print("\n           | Player 1: B |\n");
                         System.out.print("           | Player 2: R |\n\n");
                         break;
@@ -281,7 +281,7 @@ public class Plateau {
     }
 
     private void pointsPourRouge(Joueur j) {
-        assertEquals(j.getIdPiece(), 'R');
+        assert(j.getIdPiece() == 'R');
         for(Spot s: spots) {
             if (rougeEstSurSpot(s))
                 j.incNbPointsJoueur();
@@ -289,7 +289,7 @@ public class Plateau {
     }
 
     private void pointsPourBleu(Joueur j) {
-        assertEquals(j.getIdPiece(), 'B');
+        assert(j.getIdPiece() == 'B');
         for(Spot s: spots) {
             if (bleuEstSurSpot(s))
                 j.incNbPointsJoueur();
@@ -364,7 +364,7 @@ public class Plateau {
         if (idPiece == 'R') {
             pieces.getFirst().setEnMouvement(true);
             recherchePosLibre();
-            assertFalse(destinations.isEmpty());
+            assert(!destinations.isEmpty());
             System.out.println(this);
             if (this.langue.equals(Langages.ENGLISH))
                 System.out.print("\n*------ Turn of Player " + numJoueur + " (1/2) -----*\n\n(R) Destination choice [1 ; " + destinations.size() + "]: ");
@@ -378,7 +378,7 @@ public class Plateau {
         else if (idPiece == 'W') {
             pieces.get(1).setEnMouvement(true);
             recherchePosLibre();
-            assertFalse(destinations.isEmpty());
+            assert(!destinations.isEmpty());
             System.out.println(this);
             if (this.langue.equals(Langages.ENGLISH))
                 System.out.print("\n*------ Turn of Player " + numJoueur + " (2/2) -----*\n\n(W) Destination choice [1 ; " + destinations.size() + "]: ");
@@ -392,7 +392,7 @@ public class Plateau {
         else if (idPiece == 'B') {
             pieces.get(2).setEnMouvement(true);
             recherchePosLibre();
-            assertFalse(destinations.isEmpty());
+            assert(!destinations.isEmpty());
             System.out.println(this);
             if (this.langue.equals(Langages.ENGLISH))
                 System.out.print("\n*------ Turn of Player " + numJoueur + " (1/2) -----*\n\n(B) Destination choice [1 ; " + destinations.size() + "]: ");
@@ -509,7 +509,7 @@ public class Plateau {
                                     ouiNonBis = sc.next();
                                     if (ouiNonBis.equals("(Francais)")) {
                                         this.langue = Langages.FRANCAIS;
-                                        assertTrue(this.langue.equals(Langages.FRANCAIS));
+                                        assert(this.langue.equals(Langages.FRANCAIS));
                                         ouiNonBis = "no";
                                         System.out.print("\n\n*--- La langue du jeu a été mise en Français avec succès! ---*\n\n");
                                         break;

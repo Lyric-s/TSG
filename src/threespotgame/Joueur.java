@@ -1,4 +1,4 @@
-package ThreeSpotGame;
+package threespotgame;
 
 public class Joueur {
     private int nbPointJoueur;
