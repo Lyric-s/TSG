@@ -7,10 +7,13 @@ import java.util.Scanner;
 import static java.lang.String.valueOf;
 
 public class Plateau {
-    private enum Langages {
+    private enum Langues {
+        /**
+         * Ensemble des différentes langues pour lesquels les différents affichages du plateau ont une version traduite
+         */
         FRANCAIS, ENGLISH;
     }
-    private Langages langue;
+    private Langues langue;
     private final int largeur, hauteur;
     private final LinkedList<Piece> pieces;
     private final LinkedList<Destination> destinations;
@@ -18,39 +21,72 @@ public class Plateau {
     private final Joueur J1, J2;
     private int nbTour;
 
+    /**
+     * Classe propre aux différents spots du plateau
+     */
     private class Spot {
         private static int nbSpots = 0;
         private final int idSpot;
         private final int x, y;
 
+        /**
+         * Constructeur de la classe privée spot
+         * @param x, coordonnée x (ligne) du spot
+         * @param y, coordonnée y (ligne) du spot
+         */
         public Spot(int x, int y) {
             this.x = x;
             this.y = y;
             this.idSpot = ++nbSpots;
         }
 
+        /**
+         * Getter de l'Id d'un spot
+         * @return int idSpot
+         */
         public int getIdSpot() {
             return idSpot;
         }
 
+        /**
+         * Getter de la coordonée d'un spot
+         * @return int x
+         */
         public int getX() {
             return x;
         }
 
+        /**
+         * Getter de la coordonée y d'un spot
+         * @return int x
+         */
         public int getY() {
             return y;
         }
 
+        /**
+         * Re instancie à zéro le nombre de spots dans le classe Spot
+         */
         public static void resetNbSpots() {
             Spot.nbSpots = 0;
         }
     }
 
+    /**
+     * Classe propre aux futures potentielles destinations d'une pièce du plateau
+     */
     private class Destination {
         private static int nbDestinations = 0;
         private final int xa, ya, xb, yb;
         private final char idDestination;
 
+        /**
+         * Constructeur de la clasee privée Destination
+         * @param xa
+         * @param ya
+         * @param xb
+         * @param yb
+         */
         public Destination(int xa, int ya, int xb, int yb) {
             ++nbDestinations;
             String s = valueOf(nbDestinations);
@@ -61,48 +97,95 @@ public class Plateau {
             this.idDestination = s.charAt(0);
         }
 
+        /**
+         * Getter du premier x (xa) de la destination
+         * @return int xa
+         */
         public int getXa() {
             return xa;
         }
 
+        /**
+         * Getter du premier y (ya) de la destination
+         * @return int ya
+         */
         public int getYa() {
             return ya;
         }
 
+        /**
+         * Getter du second x (xb) de la destination
+         * @return int xb
+         */
         public int getXb() {
             return xb;
         }
 
+        /**
+         * Getter du second y (yb) de la destination
+         * @return int yb
+         */
         public int getYb() {
             return yb;
         }
 
+        /**
+         * Getter de l'Id de la destination
+         * @return char idDestination
+         */
         public char getId() {
             return idDestination;
         }
 
+        /**
+         * Confirme qu'une destination est de nature verticale, ou non
+         * @return boolean
+         */
         public boolean estVerticale() {
             return ya==yb && xb-xa == 1;
         }
 
+        /**
+         * Confirme qu'une destination est de nature horizontale, ou non
+         * @return boolean
+         */
         public boolean estHorizontale() {
             return xa==xb && yb-ya == 1;
         }
 
+        /**
+         * Confirme que la coordonée réferencée correspond  à la premère coordonée (xa, ya) d'une destination
+         * @param xa
+         * @param ya
+         * @return boolean
+         */
         public boolean occupeA(int xa, int ya) {
             return this.xa == xa && this.ya == ya;
         }
 
+        /**
+         * Confirme que la coordonée réferencée correspond à la seconde coordonée (xb, yb) d'une destination
+         * @param xb
+         * @param yb
+         * @return boolean
+         */
         public boolean occupeB(int xb, int yb) {
             return this.xb == xb && this.yb == yb;
         }
 
+        /**
+         * Re instancie le nombre de destination à 0
+         */
         public static void resetNbDestinations() {
             Destination.nbDestinations = 0;
         }
     }
+
+    /**
+     * Constructeur de la classe Plateau
+     */
     public Plateau() {
-        this.langue = Langages.FRANCAIS;
+        this.langue = Langues.FRANCAIS;
         this.largeur = 3;
         this.hauteur = 3;
         this.pieces = new LinkedList<>();
@@ -113,24 +196,44 @@ public class Plateau {
         this.nbTour = 0;
     }
 
+    /**
+     * Ajoute une pièce e, de la classe Piece, à l'objet/au plateau de la classe Plateau
+     * @param e, piece
+     */
     private void ajouter(Piece e) {
         pieces.add(e);
     }
 
+    /**
+     * Ajoute un spot s, de la classe Spot, au Plateau
+     * @param s, spot
+     */
     private void ajouter(Spot s) {
         spots.add(s);
     }
 
+    /**
+     * Vide l'ensemble de la liste destinations du plateau, ainsi que sont compteur
+     */
     private void viderSpots() {
         spots.clear();
         Spot.resetNbSpots();
     }
 
+    /**
+     * Vide l'ensemble de la liste destinations du plateau, ainsi que sont compteur
+     */
     private void viderDestinations() {
         destinations.clear();
         Destination.resetNbDestinations();
     }
 
+    /**
+     * Recherche la destination occupant la case de coordonée l, c, du plateau
+     * @param l, ligne (x)
+     * @param c, colonne (y)
+     * @return La destination d, de la classe Destination, occupant les coordonées entrées
+     */
     private Destination occupante(int l, int c) {
         for (Destination d: destinations) {
             if (d.estVerticale() && d.occupeB(l, c))
@@ -141,6 +244,12 @@ public class Plateau {
         return null;
     }
 
+    /**
+     * Ajoute toutes les destinations occupant la même case (Verticale vs Horizontale) dans une liste où les stocker
+     * @param listDest
+     * @param l, ligne (x)
+     * @param c, colonne (y)
+     */
     private void destinationsOccupantes(ArrayList<Destination> listDest, int l, int c) {
         for (Destination d: destinations) {
             if (d.estVerticale() && d.occupeB(l, c) || d.estHorizontale() && d.occupeA(l, c))
@@ -153,14 +262,23 @@ public class Plateau {
             }
     }
 
-    private Piece occupant(int l, int c) {
-        for (Piece e: pieces) {
-            if (e.occupe(l, c))
-                return e;
+    /**
+     * Recherche la Piece occupant la case de coordonée l, c, du plateau
+     * @param l, ligne (x)
+     * @param c, colonne (l)
+     * @return Piece p, si une a été trouvée
+     */
+    private Piece pieceOccupant(int l, int c) {
+        for (Piece p: pieces) {
+            if (p.occupe(l, c))
+                return p;
         }
         return null;
     }
 
+    /**
+     * Initialise les pièces d'un objet de la classe Plateau
+     */
     private void initPiecesPlateau() {
         pieces.clear();
         viderSpots();
@@ -179,19 +297,22 @@ public class Plateau {
         System.out.println(this + "\n");
     }
 
+    /**
+     * Initialise les joueurs, de la classe Joueur, d'un objet de la classe Plateau afin de jouer au 3 Spot Game
+     */
     private void initJoueursThreeSpotGame() {
         String couleurPiece;
         Scanner scanCouleur = new Scanner(System.in);
         J1.setNbPointJoueur(0);
         J2.setNbPointJoueur(0);
         this.nbTour = 0;
-        if (this.langue.equals(Langages.ENGLISH))
+        if (this.langue.equals(Langues.ENGLISH))
             System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
-        else if (this.langue.equals(Langages.FRANCAIS))
+        else if (this.langue.equals(Langues.FRANCAIS))
             System.out.print("Joueur 1 doit choisir sa pièce de couleur (Rouge/Bleue) : ");
         while(true) {
             couleurPiece = scanCouleur.next();
-            if (this.langue.equals(Langages.FRANCAIS)) {
+            if (this.langue.equals(Langues.FRANCAIS)) {
                 if ("Rouge".equals(couleurPiece)) {
                     J1.setIdPiece('R');
                     J2.setIdPiece('B');
@@ -209,8 +330,8 @@ public class Plateau {
                     System.out.print("          | Joueur 2 : R |\n\n");
                     break;
                 } else if ("(English)".equals(couleurPiece)) {
-                    this.langue = Langages.ENGLISH;
-                    assert(this.langue.equals(Langages.ENGLISH));
+                    this.langue = Langues.ENGLISH;
+                    assert(this.langue.equals(Langues.ENGLISH));
                     System.out.print("\n\n*--- The language of the game has been successfully set to English! ---*\n\n");
                     System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
                     while (true) {
@@ -242,7 +363,7 @@ public class Plateau {
                     System.out.print("\nERREUR : Couleur non référencée.\nRéessayez : ");
                 }
             }
-            else if (this.langue.equals(Langages.ENGLISH)) {
+            else if (this.langue.equals(Langues.ENGLISH)) {
                 while (true) {
                     if ("Red".equals(couleurPiece)) {
                         J1.setIdPiece('R');
@@ -271,14 +392,28 @@ public class Plateau {
         }
     }
 
+    /**
+     * Confirme si la pièce rouge (La première) se trouve sur un spot
+     * @param s, spot
+     * @return boolean
+     */
     private boolean rougeEstSurSpot(Spot s) {
         return pieces.get(0).occupe(s.getX(),s.getY());
     }
 
+    /**
+     * Confirme si la pièce bleue (La dernière) se trouve sur un spot
+     * @param s, spot
+     * @return boolean
+     */
     private boolean bleuEstSurSpot(Spot s) {
         return pieces.get(2).occupe(s.getX(),s.getY());
     }
 
+    /**
+     * Incrémente les points au joueur donné en fonction de la pièce rouge, et des spots couverts par cette dernière
+     * @param j, joueur
+     */
     private void pointsPourRouge(Joueur j) {
         assert(j.getIdPiece() == 'R');
         for(Spot s: spots) {
@@ -287,6 +422,10 @@ public class Plateau {
         }
     }
 
+    /**
+     * Incrémente les points au joueur donné en fonction de la pièce bleue, et des spots couverts par cette dernière
+     * @param j, joueur
+     */
     private void pointsPourBleu(Joueur j) {
         assert(j.getIdPiece() == 'B');
         for(Spot s: spots) {
@@ -295,6 +434,14 @@ public class Plateau {
         }
     }
 
+    /**
+     * Confirme si les deux cases, de coordonées données, sont non occupées par une pièce du plateau
+     * @param xa, ligne
+     * @param ya, colonne
+     * @param xb, ligne
+     * @param yb, colonne
+     * @return boolean
+     */
     private boolean sontNonOccupees(int xa, int ya, int xb, int yb) {
         for (Piece e: pieces) {
             if (e.occupe(xa, ya, xb, yb))
@@ -303,6 +450,12 @@ public class Plateau {
         return true;
     }
 
+    /**
+     * Confirme si la case, de coordonée donnée, est non occupée par une pièce du plateau
+     * @param x, ligne
+     * @param y, colonne
+     * @return boolean
+     */
     private boolean estNonOccupee(int x, int y) {
         for (Piece e: pieces) {
             if (e.occupe(x, y) && !e.estEnMouvement())
@@ -311,6 +464,14 @@ public class Plateau {
         return true;
     }
 
+    /**
+     * Confirme si les deux cases, de coordonées données, sont non occupées par une position, de la classe Position, du plateau
+     * @param xa, ligne
+     * @param ya, colonne
+     * @param xb, ligne
+     * @param yb, colonne
+     * @return boolean
+     */
     private boolean estPosNonOccupee(int xa, int ya, int xb, int yb) {
         for (Destination d: destinations) {
             if (d.estVerticale() && d.occupeB(xb, yb) && d.occupeA(xa, ya) || d.estHorizontale() && d.occupeA(xa, ya) && d.occupeB(xb, yb))
@@ -319,6 +480,9 @@ public class Plateau {
         return true;
     }
 
+    /**
+     * Recherche toutes les positions du plateau qui sont libres/non occupées, et les ajoute à la liste destinations de l'objet de plateau
+     */
     private void recherchePosLibre() {
         for (int ya = 0; ya < hauteur; ++ya) {
             for (int xb = 0; xb < largeur; ++xb) {
@@ -337,6 +501,10 @@ public class Plateau {
         }
     }
 
+    /**
+     * Prend en input la position choisit par le joueur utilisateur
+     * @return int position, la position entrée par le joueur
+     */
     private int entreePosition() {
         Scanner scanPosition = new Scanner(System.in);
         String temp;
@@ -347,9 +515,9 @@ public class Plateau {
                 position = temp.charAt(0) - '0';
             }
             if (position > destinations.size() || position < 1) {
-                if (this.langue.equals(Langages.ENGLISH))
+                if (this.langue.equals(Langues.ENGLISH))
                     System.out.print("\nERROR: unknown position.\nTry again: ");
-                else if (this.langue.equals(Langages.FRANCAIS))
+                else if (this.langue.equals(Langues.FRANCAIS))
                     System.out.print("\nERREUR : position inexistante.\nRéessayez : ");
             }
             else
@@ -358,6 +526,11 @@ public class Plateau {
         return --position;
     }
 
+    /**
+     * Déplace les pièces en fonctions des actions d'un joueur
+     * @param numJoueur, Le numéro du joueur faisant une action
+     * @param idPiece, Id de la pièce avec laquelle le joueur s'apprète à effectuer une action
+     */
     private void deplacementPieceJoueur(int numJoueur, char idPiece) {
         int position;
         if (idPiece == 'R') {
@@ -365,9 +538,9 @@ public class Plateau {
             recherchePosLibre();
             assert(!destinations.isEmpty());
             System.out.println(this);
-            if (this.langue.equals(Langages.ENGLISH))
+            if (this.langue.equals(Langues.ENGLISH))
                 System.out.print("\n*------ Turn of Player " + numJoueur + " (1/2) -----*\n\n(R) Destination choice [1 ; " + destinations.size() + "]: ");
-            else if (this.langue.equals(Langages.FRANCAIS))
+            else if (this.langue.equals(Langues.FRANCAIS))
                 System.out.print("\n*------ Tour du Joueur " + numJoueur + " (1/2) -----*\n\n(R) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
             pieces.removeFirst();
@@ -379,9 +552,9 @@ public class Plateau {
             recherchePosLibre();
             assert(!destinations.isEmpty());
             System.out.println(this);
-            if (this.langue.equals(Langages.ENGLISH))
+            if (this.langue.equals(Langues.ENGLISH))
                 System.out.print("\n*------ Turn of Player " + numJoueur + " (2/2) -----*\n\n(W) Destination choice [1 ; " + destinations.size() + "]: ");
-            else if (this.langue.equals(Langages.FRANCAIS))
+            else if (this.langue.equals(Langues.FRANCAIS))
                 System.out.print("\n*------ Tour du Joueur " + numJoueur + " (2/2) -----*\n\n(W) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
             pieces.remove(1);
@@ -393,9 +566,9 @@ public class Plateau {
             recherchePosLibre();
             assert(!destinations.isEmpty());
             System.out.println(this);
-            if (this.langue.equals(Langages.ENGLISH))
+            if (this.langue.equals(Langues.ENGLISH))
                 System.out.print("\n*------ Turn of Player " + numJoueur + " (1/2) -----*\n\n(B) Destination choice [1 ; " + destinations.size() + "]: ");
-            else if (this.langue.equals(Langages.FRANCAIS))
+            else if (this.langue.equals(Langues.FRANCAIS))
                 System.out.print("\n*------ Tour du Joueur " + numJoueur + " (1/2) -----*\n\n(B) Choix de destination [1 ; " + destinations.size() + "] : ");
             position = entreePosition();
             pieces.remove(2);
@@ -404,12 +577,18 @@ public class Plateau {
         }
     }
 
+    /**
+     * Initialise l'objet afin de faire un partie de 3 Spot Game
+     */
     private void initThreeSpotGame() {
         pieces.clear();
         initPiecesPlateau();
         initJoueursThreeSpotGame();
     }
 
+    /**
+     * Effectue un nouveau tour de 3 Spot Game
+     */
     private void nouvTour() {
         ++nbTour;
         if (nbTour % 2 == 1) {
@@ -437,28 +616,35 @@ public class Plateau {
             }
         }
         System.out.println(this);
-        if (this.langue.equals(Langages.ENGLISH) && !finDePartie())
+        if (this.langue.equals(Langues.ENGLISH) && !finDePartie())
             System.out.println("\n\n\n*------------- NEW TURN ------------*");
-        else if (this.langue.equals(Langages.ENGLISH) && finDePartie())
+        else if (this.langue.equals(Langues.ENGLISH) && finDePartie())
             System.out.println("\n\n\n*------------ GAME OVER ------------*");
-        else if (this.langue.equals(Langages.FRANCAIS) && !finDePartie())
+        else if (this.langue.equals(Langues.FRANCAIS) && !finDePartie())
             System.out.println("\n\n\n*----------- NOUVEAU TOUR ----------*");
-        else if (this.langue.equals(Langages.FRANCAIS) && finDePartie())
+        else if (this.langue.equals(Langues.FRANCAIS) && finDePartie())
             System.out.println("\n\n\n*--------- PARTIE TERMINEE ---------*");
-        if (this.langue.equals(Langages.ENGLISH)) {
+        if (this.langue.equals(Langues.ENGLISH)) {
             System.out.print("\nPlayer 1" + (J1.getIdPiece() == 'R' ? " (Red piece): " : " (Blue piece): ") + J1.getNbPointJoueur() + " points");
             System.out.print("\nPlayer 2" + (J2.getIdPiece() == 'R' ? " (Red piece): " : " (Blue piece): ") + J2.getNbPointJoueur() + " points\n");
         }
-        else if (this.langue.equals(Langages.FRANCAIS)) {
+        else if (this.langue.equals(Langues.FRANCAIS)) {
             System.out.print("\nJoueur 1" + (J1.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J1.getNbPointJoueur() + " points");
             System.out.print("\nJoueur 2" + (J2.getIdPiece() == 'R' ? " (piece Rouge) : " : " (piece Bleue) : ") + J2.getNbPointJoueur() + " points\n");
         }
     }
 
+    /**
+     * Confirme si la condition de fin de partie est atteinte ou non
+     * @return boolean
+     */
     private boolean finDePartie() {
         return(J1.getNbPointJoueur() >= 12 || J2.getNbPointJoueur() >= 12);
     }
 
+    /**
+     * Fait jouer au moins une partie de 3 Spot Game
+     */
     public void jouerThreeSpotGame() {
         Scanner sc = new Scanner(System.in);
         String ouiNon;
@@ -468,28 +654,28 @@ public class Plateau {
                 nouvTour();
             }
             if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() >= 6) {
-                if (this.langue.equals(Langages.ENGLISH))
+                if (this.langue.equals(Langues.ENGLISH))
                     System.out.println("\n*----- Victory of the Player 2 -----*\n");
-                else if (this.langue.equals(Langages.FRANCAIS))
+                else if (this.langue.equals(Langues.FRANCAIS))
                     System.out.println("\n*------- Victoire du Joueur 2 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() >= 6) {
-                if (this.langue.equals(Langages.ENGLISH))
+                if (this.langue.equals(Langues.ENGLISH))
                     System.out.println("\n*----- Victory of the Player 1 -----*\n");
-                else if (this.langue.equals(Langages.FRANCAIS))
+                else if (this.langue.equals(Langues.FRANCAIS))
                     System.out.println("\n*------- Victoire du Joueur 1 ------*\n");
             } else if (J1.getNbPointJoueur() >= 12 && J2.getNbPointJoueur() < 6) {
-                if (this.langue.equals(Langages.ENGLISH))
+                if (this.langue.equals(Langues.ENGLISH))
                     System.out.println("\n*----- Victory of the Player 2 -----*\n");
-                else if (this.langue.equals(Langages.FRANCAIS))
+                else if (this.langue.equals(Langues.FRANCAIS))
                     System.out.println("\n*------- Victoire du Joueur 2 ------*\n");
             } else if (J2.getNbPointJoueur() >= 12 && J1.getNbPointJoueur() < 6) {
-                if (this.langue.equals(Langages.ENGLISH))
+                if (this.langue.equals(Langues.ENGLISH))
                     System.out.println("\n*----- Victory of the Player 1 -----*\n");
-                else if (this.langue.equals(Langages.FRANCAIS))
+                else if (this.langue.equals(Langues.FRANCAIS))
                     System.out.println("\n*------- Victoire du Joueur 1 ------*\n");
             }
             while (true) {
-                if (this.langue.equals(Langages.ENGLISH)) {
+                if (this.langue.equals(Langues.ENGLISH)) {
                     System.out.print("Play again? (yes/no): ");
                     ouiNon = sc.next();
                     if (ouiNon.equals("no")) {
@@ -507,8 +693,8 @@ public class Plateau {
                                 while (true) {
                                     ouiNonBis = sc.next();
                                     if (ouiNonBis.equals("(Francais)")) {
-                                        this.langue = Langages.FRANCAIS;
-                                        assert(this.langue.equals(Langages.FRANCAIS));
+                                        this.langue = Langues.FRANCAIS;
+                                        assert(this.langue.equals(Langues.FRANCAIS));
                                         ouiNonBis = "no";
                                         System.out.print("\n\n*--- La langue du jeu a été mise en Français avec succès! ---*\n\n");
                                         break;
@@ -527,7 +713,7 @@ public class Plateau {
                             break;
                     }
                 }
-                else if (this.langue.equals(Langages.FRANCAIS)) {
+                else if (this.langue.equals(Langues.FRANCAIS)) {
                     System.out.print("Faire une nouvelle partie ? (oui/non) : ");
                     ouiNon = sc.next();
                     if (ouiNon.equals("non")) {
@@ -538,19 +724,23 @@ public class Plateau {
                     }
                 }
             }
-            if ((ouiNon.equals("non") && this.langue.equals(Langages.FRANCAIS) || (ouiNon.equals("no") && this.langue.equals(Langages.ENGLISH)))) {
+            if ((ouiNon.equals("non") && this.langue.equals(Langues.FRANCAIS) || (ouiNon.equals("no") && this.langue.equals(Langues.ENGLISH)))) {
                 break;
             }
         }
     }
 
+    /**
+     * toString de la classe Plateau. Enregistre sous forme de chaine de caractères les données à enregistrer de la sorte dans l'objet de la classe Plateau
+     * @return String de l'objet de la classe Plateau
+     */
     public String toString() {
         StringBuilder str = new StringBuilder("*  *  *  *  *  *  *  *  *  *  *  *  *");
         str.append("\n*           *           *           *\n");
         if (destinations.isEmpty()) {
             for (int l = 0; l < hauteur; ++l) {
                 for (int c = 0; c < largeur; ++c) {
-                    Piece e = occupant(l, c);
+                    Piece e = pieceOccupant(l, c);
                     if (c > 0 && c < largeur-1) {
                         str.append(e == null ? "           " : "     " + e.getId() + "     ");
                     }
@@ -569,7 +759,7 @@ public class Plateau {
             ArrayList<Destination> listDestTempo = new ArrayList<>();
             for (int l = 0; l < hauteur; ++l) {
                 for (int c = 0; c < largeur; ++c) {
-                    Piece e = occupant(l, c);
+                    Piece e = pieceOccupant(l, c);
                     Destination d = occupante(l, c);
                     listDestTempo.clear();
                     destinationsOccupantes(listDestTempo, l, c);
@@ -600,9 +790,9 @@ public class Plateau {
                 if (l < hauteur-1)
                     str.append("\n*           *           *           *\n");
             }
-            if (this.langue.equals(Langages.ENGLISH) && nbTour >= 1)
+            if (this.langue.equals(Langues.ENGLISH) && nbTour >= 1)
                 str.append("\n            Turn number: ").append(nbTour);
-            else if (this.langue.equals(Langages.FRANCAIS) && nbTour >= 1)
+            else if (this.langue.equals(Langues.FRANCAIS) && nbTour >= 1)
                 str.append("\n           Tour numéro : ").append(nbTour);
         }
         String s;
