@@ -148,7 +148,7 @@ public class Plateau {
         }
         if (!listDest.isEmpty())
             if (listDest.get(0).estHorizontale()) {
-                listDest.addFirst(listDest.get(listDest.size()-1));
+                listDest.add(0, listDest.get(listDest.size()-1));
                 listDest.remove(listDest.size()-1);
             }
     }
