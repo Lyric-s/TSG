@@ -1,6 +1,5 @@
 package threespotgame;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Piece {
     private final char id;

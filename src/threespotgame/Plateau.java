@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 import static java.lang.String.valueOf;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class Plateau {
     private enum Langages {
@@ -148,9 +147,9 @@ public class Plateau {
                 listDest.add(d);
         }
         if (!listDest.isEmpty())
-            if (listDest.getFirst().estHorizontale()) {
-                listDest.addFirst(listDest.getLast());
-                listDest.removeLast();
+            if (listDest.get(0).estHorizontale()) {
+                listDest.addFirst(listDest.get(listDest.size()-1));
+                listDest.remove(listDest.size()-1);
             }
     }
 
@@ -168,13 +167,13 @@ public class Plateau {
         ajouter(new Piece('R',0,1,0,2));
         ajouter(new Piece('W',1,1,1,2));
         ajouter(new Piece('B',2,1,2,2));
-        assert('R' == pieces.getFirst().getId());
+        assert('R' == pieces.get(0).getId());
         assert('W' == pieces.get(1).getId());
         assert('B' == pieces.get(2).getId());
         ajouter(new Spot(0,2));
         ajouter(new Spot(1,2));
         ajouter(new Spot(2,2));
-        assert(1 == spots.getFirst().getIdSpot());
+        assert(1 == spots.get(0).getIdSpot());
         assert(2 == spots.get(1).getIdSpot());
         assert(3 == spots.get(2).getIdSpot());
         System.out.println(this + "\n");
@@ -273,7 +272,7 @@ public class Plateau {
     }
 
     private boolean rougeEstSurSpot(Spot s) {
-        return pieces.getFirst().occupe(s.getX(),s.getY());
+        return pieces.get(0).occupe(s.getX(),s.getY());
     }
 
     private boolean bleuEstSurSpot(Spot s) {
@@ -362,7 +361,7 @@ public class Plateau {
     private void deplacementPieceJoueur(int numJoueur, char idPiece) {
         int position;
         if (idPiece == 'R') {
-            pieces.getFirst().setEnMouvement(true);
+            pieces.get(0).setEnMouvement(true);
             recherchePosLibre();
             assert(!destinations.isEmpty());
             System.out.println(this);
@@ -576,24 +575,24 @@ public class Plateau {
                     destinationsOccupantes(listDestTempo, l, c);
                     if (c > 0 && c < largeur-1) {
                         if (d != null) {
-                            str.append(e == null ? (listDestTempo.size() > 1 ? "   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   " : "     " + d.getId() + "     ") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   " : "     " + d.getId() + "     ") : "     " + e.getId() + "    "));
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   " : "     " + d.getId() + "     ") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   " : "     " + d.getId() + "     ") : "     " + e.getId() + "    "));
                         }
                         else
-                            str.append(e == null ? (listDestTempo.size() > 1 ? "   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   " : "           ") : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   " : "           ") : "     " + (e.estEnMouvement() ? " " : e.getId()) + "     ");
                     }
                     else if (c == 0) {
                         if (d != null) {
-                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : "*     " + e.getId() + "    *"));
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   *" : "*     " + d.getId() + "     *") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   *" : "*     " + d.getId() + "     *") : "*     " + e.getId() + "    *"));
                         }
                         else
-                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*           *") : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   *" : "*           *") : "*     " + (e.estEnMouvement() ? " " : e.getId()) + "     *");
                     }
                     else if (c == largeur-1) {
                         if (d != null) {
-                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     " + d.getId() + "     *") : "*     " + e.getId() + "    *"));
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   *" : "*     " + d.getId() + "     *") : (e.estEnMouvement() ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   *" : "*     " + d.getId() + "     *") : "*     " + e.getId() + "    *"));
                         }
                         else
-                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.getFirst().getId() + " - " + listDestTempo.getLast().getId() + "   *" : "*     O     *"): "*     " + (e.estEnMouvement() ? "O" : e.getId()) + "     *");
+                            str.append(e == null ? (listDestTempo.size() > 1 ? "*   " + listDestTempo.get(0).getId() + " - " + listDestTempo.get(listDestTempo.size()-1).getId() + "   *" : "*     O     *"): "*     " + (e.estEnMouvement() ? "O" : e.getId()) + "     *");
                     }
                 }
                 str.append("\n*           *           *           *\n");
