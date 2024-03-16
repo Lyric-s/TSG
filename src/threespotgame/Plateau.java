@@ -265,7 +265,7 @@ public class Plateau {
     /**
      * Recherche la Piece occupant la case de coordonée l, c, du plateau
      * @param l, ligne (x)
-     * @param c, colonne (l)
+     * @param c, colonne (y)
      * @return Piece p, si une a été trouvée
      */
     private Piece pieceOccupant(int l, int c) {
@@ -313,7 +313,7 @@ public class Plateau {
         while(true) {
             couleurPiece = scanCouleur.next();
             if (this.langue.equals(Langues.FRANCAIS)) {
-                if ("Rouge".equals(couleurPiece)) {
+                if ("ROUGE".equals(couleurPiece.toUpperCase())) {
                     J1.setIdPiece('R');
                     J2.setIdPiece('B');
                     assert('R' == J1.getIdPiece());
@@ -321,7 +321,7 @@ public class Plateau {
                     System.out.print("\n          | Joueur 1 : R |\n");
                     System.out.print("          | Joueur 2 : B |\n\n");
                     break;
-                } else if ("Bleue".equals(couleurPiece)) {
+                } else if ("BLEUE".equals(couleurPiece.toUpperCase())) {
                     J1.setIdPiece('B');
                     J2.setIdPiece('R');
                     assert('B' == J1.getIdPiece());
@@ -329,14 +329,14 @@ public class Plateau {
                     System.out.print("\n          | Joueur 1 : B |\n");
                     System.out.print("          | Joueur 2 : R |\n\n");
                     break;
-                } else if ("(English)".equals(couleurPiece)) {
+                } else if ("(ENGLISH)".equals(couleurPiece.toUpperCase())) {
                     this.langue = Langues.ENGLISH;
                     assert(this.langue.equals(Langues.ENGLISH));
                     System.out.print("\n\n*--- The language of the game has been successfully set to English! ---*\n\n");
                     System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
                     while (true) {
                         couleurPiece = scanCouleur.next();
-                        if ("Red".equals(couleurPiece)) {
+                        if ("RED".toUpperCase().equals(couleurPiece)) {
                             J1.setIdPiece('R');
                             J2.setIdPiece('B');
                             assert('R' == J1.getIdPiece());
@@ -344,7 +344,7 @@ public class Plateau {
                             System.out.print("\n           | Player 1: R |\n");
                             System.out.print("           | Player 2: B |\n\n");
                             break;
-                        } else if ("Blue".equals(couleurPiece)) {
+                        } else if ("BLUE".toUpperCase().equals(couleurPiece)) {
                             J1.setIdPiece('B');
                             J2.setIdPiece('R');
                             assert('B' == J1.getIdPiece());
@@ -365,7 +365,7 @@ public class Plateau {
             }
             else if (this.langue.equals(Langues.ENGLISH)) {
                 while (true) {
-                    if ("Red".equals(couleurPiece)) {
+                    if ("RED".equals(couleurPiece.toUpperCase())) {
                         J1.setIdPiece('R');
                         J2.setIdPiece('B');
                         assert('R' == J1.getIdPiece());
@@ -373,7 +373,7 @@ public class Plateau {
                         System.out.print("\n           | Player 1: R |\n");
                         System.out.print("           | Player 2: B |\n\n");
                         break;
-                    } else if ("Blue".equals(couleurPiece)) {
+                    } else if ("BLUE".equals(couleurPiece.toUpperCase())) {
                         J1.setIdPiece('B');
                         J2.setIdPiece('R');
                         assert('B' == J1.getIdPiece());
@@ -678,29 +678,29 @@ public class Plateau {
                 if (this.langue.equals(Langues.ENGLISH)) {
                     System.out.print("Play again? (yes/no): ");
                     ouiNon = sc.next();
-                    if (ouiNon.equals("no")) {
-                        System.out.print("\nThanks for playing! ✌\uFE0F");
+                    if (ouiNon.toUpperCase().equals("NO")) {
+                        System.out.print("\nThanks for playing!");
                         break;
-                    } else if (ouiNon.equals("yes")) {
+                    } else if (ouiNon.toUpperCase().equals("YES")) {
                         String ouiNonBis;
                         while (true) {
                             System.out.print("Change the language? (yes/no): ");
                             ouiNonBis = sc.next();
-                            if (ouiNonBis.equals("no"))
+                            if (ouiNonBis.toUpperCase().equals("NO"))
                                 break;
-                            else if (ouiNonBis.equals("yes")) {
+                            else if (ouiNonBis.toUpperCase().equals("YES")) {
                                 System.out.print("Choose a language among the available ones (FRENCH: (Francais); ENGLISH: (English)): ");
                                 while (true) {
                                     ouiNonBis = sc.next();
-                                    if (ouiNonBis.equals("(Francais)")) {
+                                    if (ouiNonBis.toUpperCase().equals("(FRANCAIS)")) {
                                         this.langue = Langues.FRANCAIS;
                                         assert(this.langue.equals(Langues.FRANCAIS));
-                                        ouiNonBis = "no";
+                                        ouiNonBis = "NO";
                                         System.out.print("\n\n*--- La langue du jeu a été mise en Français avec succès! ---*\n\n");
                                         break;
                                     }
-                                    else if (ouiNonBis.equals("(English)")) {
-                                        ouiNonBis = "no";
+                                    else if (ouiNonBis.toUpperCase().equals("(ENGLISH)")) {
+                                        ouiNonBis = "NO";
                                         break;
                                     }
                                     else
@@ -709,22 +709,22 @@ public class Plateau {
                                 break;
                             }
                         }
-                        if (ouiNonBis.equals("no"))
+                        if (ouiNonBis.toUpperCase().equals("NO"))
                             break;
                     }
                 }
                 else if (this.langue.equals(Langues.FRANCAIS)) {
                     System.out.print("Faire une nouvelle partie ? (oui/non) : ");
                     ouiNon = sc.next();
-                    if (ouiNon.equals("non")) {
-                        System.out.print("\nMerci d'avoir joué ! ✌\uFE0F");
+                    if (ouiNon.toUpperCase().equals("NON")) {
+                        System.out.print("\nMerci d'avoir joué !");
                         break;
-                    } else if (ouiNon.equals("oui")) {
+                    } else if (ouiNon.toUpperCase().equals("OUI")) {
                         break;
                     }
                 }
             }
-            if ((ouiNon.equals("non") && this.langue.equals(Langues.FRANCAIS) || (ouiNon.equals("no") && this.langue.equals(Langues.ENGLISH)))) {
+            if ((ouiNon.toUpperCase().equals("NON") && this.langue.equals(Langues.FRANCAIS) || (ouiNon.toUpperCase().equals("NO") && this.langue.equals(Langues.ENGLISH)))) {
                 break;
             }
         }
@@ -791,9 +791,19 @@ public class Plateau {
                     str.append("\n*           *           *           *\n");
             }
             if (this.langue.equals(Langues.ENGLISH) && nbTour >= 1)
-                str.append("\n            Turn number: ").append(nbTour);
+                if (nbTour >= 100)
+                    str.append("\n          Turn number: ").append(nbTour); // Garder centré le comtpeur de tour >= 100
+                else if (nbTour >= 10)
+                    str.append("\n           Turn number: ").append(nbTour); // Garder centré le comtpeur de tour >= 10
+                else
+                    str.append("\n            Turn number: ").append(nbTour);
             else if (this.langue.equals(Langues.FRANCAIS) && nbTour >= 1)
-                str.append("\n           Tour numéro : ").append(nbTour);
+                if (nbTour >= 100)
+                    str.append("\n         Tour numéro : ").append(nbTour); // Garder centré le comtpeur de tour >= 100
+                else if (nbTour >= 10)
+                    str.append("\n          Tour numéro : ").append(nbTour); // Garder centré le comtpeur de tour >= 10
+                else
+                    str.append("\n           Tour numéro : ").append(nbTour);
         }
         String s;
         s = valueOf(str);

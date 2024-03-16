@@ -34,13 +34,13 @@ public class Joueur {
      * Getter du nombre de joueur
      * @return int nbJoueur
      */
-    public int getNbJoueurs() {
+    public static int getNbJoueurs() {
         return nbJoueurs;
     }
 
     /**
      *
-     * @param idPiece
+     * @param idPiece, int; Id de la pièce
      */
     public void setIdPiece(char idPiece) {
         this.idPiece = idPiece;
