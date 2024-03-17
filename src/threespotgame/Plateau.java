@@ -336,7 +336,7 @@ public class Plateau {
                     System.out.print("Player 1 must choose his colored piece (Red/Blue): ");
                     while (true) {
                         couleurPiece = scanCouleur.next();
-                        if ("RED".toUpperCase().equals(couleurPiece)) {
+                        if ("RED".equals(couleurPiece.toUpperCase())) {
                             J1.setIdPiece('R');
                             J2.setIdPiece('B');
                             assert('R' == J1.getIdPiece());
@@ -344,7 +344,7 @@ public class Plateau {
                             System.out.print("\n           | Player 1: R |\n");
                             System.out.print("           | Player 2: B |\n\n");
                             break;
-                        } else if ("BLUE".toUpperCase().equals(couleurPiece)) {
+                        } else if ("BLUE".equals(couleurPiece.toUpperCase())) {
                             J1.setIdPiece('B');
                             J2.setIdPiece('R');
                             assert('B' == J1.getIdPiece());
